@@ -49,7 +49,6 @@ get '/ads' do
   token = client[:tokens].find(:token => params['token']).first
   return 406 unless token
   ads = client[:ads].find(:active => true)
-  binding.pry
   ad = ads.first
   ads.each do |doc|
     binding.pry

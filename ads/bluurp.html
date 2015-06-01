@@ -3,13 +3,19 @@
     .ad{
       width: 320px;
       height: 50px;
+      background-color: black;
+      color: white;
     }
   </style>
 </head>
 <body>
-<div class="ad">
-  <img src="http://www.bluurp.com/assets/images/logo.png"></img>
-  <strong>Bluurp</strong><br>
-  Send messages and media across your favorite social networks!
+<div class="ad" id="ad">
+  <img style='margin-left: 10px;' src="http://www.bluurp.com/assets/images/logo.png"></img><span style="position: absolute; top: 10px; margin-left: 10px;" ><small>Send messages and media<br>across your favorite<br>social networks!</span></small>
 </div>
 </body>
+
+<script>
+  document.getElementById('ad').addEventListener('click', function(e){
+    window.top.location = "http://google.com";
+  });
+</script>
