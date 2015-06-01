@@ -7,6 +7,7 @@ require_relative 'helpers/application_helper'
 
 enable :sessions
 set :session_secret, 'adsfkljadsufljsadlft'
+set :protection, :except => :frame_options
 
 client = Mongo::Client.new(ENV['MONGOLAB_URI'] || [ '127.0.0.1:27017' ], :database => 'heroku_app37387124')
 
