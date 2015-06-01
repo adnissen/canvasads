@@ -1,4 +1,9 @@
-<form action='delete' method='DELETE'>
+<form id="deleteForm" action='delete' method='DELETE'>
   Are you sure?
   <button type='submit'>Submit</button>
 </form>
+
+<script>
+  var form = document.getElementById('deleteForm');
+  form.action = window.location.pathName;
+</script>
