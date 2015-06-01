@@ -1,4 +1,9 @@
-<form action='/ads/update' method='POST'>
+<form action='/ads/update' method='POST' id="updateForm">
   <input type='text' name='content' placeholder='hi!'>
   <button type='submit'>Submit</button>
 </form>
+
+<script>
+var form = document.getElementById('updateForm');
+form.action = window.location.pathname;
+</script>
