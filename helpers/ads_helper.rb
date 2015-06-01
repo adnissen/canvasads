@@ -1,5 +1,6 @@
 def add_impression(ad, client)
-  client[:ads].find(:_id => ad['_id']).update_one("$inc" => { :impressions => 1 }, "$inc" => { :inventory => -1 })
+  client[:ads].find(:_id => ad['_id']).update_one("$inc" => { :inventory => -1 })
+  client[:ads].find(:_id => ad['_id']).update_one("$inc" => { :impressions => 1 })
 end
 
 def create_ad(client, name, budget, content, end_date)
@@ -7,7 +8,7 @@ def create_ad(client, name, budget, content, end_date)
   ad['name'] = name
   ad['budget'] = budget
   ad['impressions'] = 0
-  ad['inventory'] = (budget.to_i / 0.75) * 1000
+  ad['inventory'] = (budget.to_i / 1.50) * 1000
   ad['content'] = content
   ad['active'] = true
   ad['owner'] = session[:user]['email']

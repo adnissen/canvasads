@@ -29,9 +29,38 @@ get '/logout' do
   'logged out'
 end
 
+get '/tokens/new' do
+  return 406 unless logged_in?
+  return 406 unless admin?
+  create_token client
+end
+
+get '/tokens/:token' do
+  return 406 unless logged_in?
+  return 405 unless params['token']
+  token = client[:tokens].find(:token => params['token']).first
+  return 406 unless token && token['owner'] == session[:user]['email']
+
+  token.to_s
+end
+
 get '/ads' do
-  ad = client[:ads].find.first
+  return unless params['token']
+  token = client[:tokens].find(:token => params['token']).first
+  return 406 unless token
+  ads = client[:ads].find(:active => true)
+  binding.pry
+  ad = ads.first
+  ads.each do |doc|
+    binding.pry
+    if ad['inventory']
+      ad = doc unless ad['inventory'] > doc['inventory']
+    else
+      ad = doc
+    end
+  end
   add_impression(ad, client)
+  update_payout(token, client)
   ad['content']
 end
 
@@ -40,6 +69,12 @@ get '/ads/ad/:_id' do
   return 'ad not found' unless ad
   add_impression(ad, client)
   ad['content']
+end
+
+get '/ads/ad/:_id/update' do
+  return 406 unless logged_in?
+  return 406 unless admin?
+  send_file 'views/ads/update.html'
 end
 
 post '/ads/ad/:_id/update' do
