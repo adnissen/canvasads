@@ -27,7 +27,7 @@ def create_token(client)
   token['token']
 end
 
-def update_payout(token)
+def update_payout(token, client)
   client[:tokens].find(:token => token['token']).update_one("$inc" => { :total_earned =>  0.001 })
   client[:tokens].find(:token => token['token']).update_one("$inc" => { :next_payout =>  0.001 })
   client[:tokens].find(:token => token['token']).update_one("$inc" => { :impressions =>  1 });
