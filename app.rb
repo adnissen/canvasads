@@ -55,7 +55,7 @@ get '/ads/ad/:_id/delete' do
   send_file 'views/ads/delete.html'
 end
 
-delete '/ads/ad/:_id/delete' do
+post '/ads/ad/:_id/delete' do
   return 406 unless logged_in?
   return 406 unless admin?
   delete_ad(client, params['_id'])
