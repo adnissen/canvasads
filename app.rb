@@ -55,6 +55,12 @@ end
 get '/ads/new' do
   return 406 unless logged_in?
   return 406 unless admin?
+  send_file 'views/ads/new.html'
+end
+
+post '/ads/new' do
+  return 406 unless logged_in?
+  return 406 unless admin?
   return 404 unless params['name'] && params['budget'] && params['content']
   create_ad(client, params['name'], params['budget'], params['content'], 123124124124)
 end
