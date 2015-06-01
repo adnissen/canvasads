@@ -8,7 +8,7 @@ require_relative 'helpers/application_helper'
 enable :sessions
 set :session_secret, 'adsfkljadsufljsadlft'
 
-client = Mongo::Client.new(ENV['MONGOLAB_URI'] || [ '127.0.0.1:27017' ], :database => 'canvas')
+client = Mongo::Client.new(ENV['MONGOLAB_URI'] || [ '127.0.0.1:27017' ], :database => 'heroku_app37387124')
 
 get '/' do
   "Canvas, advertising done right."
