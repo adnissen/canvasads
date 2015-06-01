@@ -70,12 +70,6 @@ get '/ads/ad/:_id' do
   ad['content']
 end
 
-post '/ads/ad/:_id/engage' do
-  ad = client[:ads].find(:_id => params['_id']).first
-  return 'ad not found' unless ad
-  track_engage(ad, client)
-end
-
 get '/ads/ad/:_id/update' do
   return 406 unless logged_in?
   return 406 unless admin?
