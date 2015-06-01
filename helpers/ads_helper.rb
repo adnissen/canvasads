@@ -22,3 +22,8 @@ def update_ad(client, _id, content)
   client[:ads].find(:_id => _id).update_one("$set" => { :content => content })
   'ad updated'
 end
+
+def delete_ad(client, _id)
+  return 'error, invalid credentials' unless session[:user]['email'] == client[:ads].find(:_id => _id).first['owner']
+  client[:ads].find(:_id => _id).delete_one
+end

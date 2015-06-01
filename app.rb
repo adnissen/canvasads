@@ -42,6 +42,25 @@ get '/ads/ad/:_id' do
   ad['content']
 end
 
+post '/ads/ad/:_id/update' do
+  return 406 unless logged_in?
+  return 406 unless admin?
+  return 406 unless params['content']
+  update_ad(client, params['_id'], params['content'])
+end
+
+get '/ads/ad/:_id/delete' do
+  return 406 unless logged_in?
+  return 406 unless admin?
+  send_file 'views/ads/delete.html'
+end
+
+delete '/ads/ad/:_id/delete' do
+  return 406 unless logged_in?
+  return 406 unless admin?
+  delete_ad(client, params['_id'])
+end
+
 get '/ads/list' do
   return 406 unless logged_in?
   ads = client[:ads].find(:owner => session[:user]['email'])
@@ -63,11 +82,4 @@ post '/ads/new' do
   return 406 unless admin?
   return 404 unless params['name'] && params['budget'] && params['content']
   create_ad(client, params['name'], params['budget'], params['content'], 123124124124)
-end
-
-get '/ads/ad/:_id/update' do
-  return 406 unless logged_in?
-  return 406 unless admin?
-  return 406 unless params['content']
-  update_ad(client, params['_id'], params['content'])
 end
