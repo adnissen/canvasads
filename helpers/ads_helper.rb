@@ -29,3 +29,8 @@ def delete_ad(client, _id)
   client[:ads].find(:_id => _id).delete_one
   'ad deleted'
 end
+
+def track_engage(ad, client)
+  client[:ads].find(:_id => ad['_id']).update_one("$inc" => { :engagements => 1 })
+  client[:tokens].find(:token => params['token']).update_one("$inc" => { :engagements => 1 }) if params['token']
+end
