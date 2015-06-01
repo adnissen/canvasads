@@ -51,7 +51,6 @@ get '/ads' do
   ads = client[:ads].find(:active => true)
   ad = ads.first
   ads.each do |doc|
-    binding.pry
     if ad['inventory']
       ad = doc unless ad['inventory'] > doc['inventory']
     else
