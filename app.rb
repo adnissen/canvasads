@@ -4,25 +4,28 @@ require 'pry'
 require_relative 'helpers/ads_helper'
 require_relative 'helpers/advertiser_helper'
 require_relative 'helpers/application_helper'
+require_relative 'helpers/token_helper'
+require_relative 'helpers/group_helper'
+
 
 enable :sessions
 set :session_secret, 'adsfkljadsufljsadlft'
 set :protection, :except => :frame_options
 
-client = Mongo::Client.new(ENV['MONGOLAB_URI'] || [ '127.0.0.1:27017' ], :database => 'heroku_app37387124')
+client = Mongo::Client.new(ENV['MONGOLAB_URI'] || [ '127.0.0.1:27017' ], :database => ENV['RACK_ENV'] || 'heroku_app37387124')
 
 get '/' do
   "Canvas, advertising done right."
 end
 
 get '/advertisers/new' do
-  return 404 unless params['username'] && params['password'] && params['email']
+  return 406 unless params['username'] && params['password'] && params['email']
   create_advertiser(client, params['username'], params['password'], params['email'])
 end
 
 get '/login' do
   return 406 unless log_in(client, params['email'], params['password'])
-  session[:user]['email']
+  return 200
 end
 
 get '/logout' do
@@ -30,7 +33,7 @@ get '/logout' do
   'logged out'
 end
 
-get '/tokens/new' do
+post '/tokens/new' do
   return 406 unless logged_in?
   return 406 unless admin?
   create_token client
@@ -45,20 +48,39 @@ get '/tokens/:token' do
   token.to_s
 end
 
+post '/tokens/:token/group/update' do
+  return 406 unless logged_in?
+  return 405 unless params['token'] && params['group']
+  token = client[:tokens].find(:token => params['token']).first
+  return 406 unless token && token['owner'] == session[:user]['email']
+  group = client[:groups].find(:_id => params['group']).first
+  return 404 unless group
+
+  update_token_group client, token, group
+end
+
 get '/ads' do
-  return unless params['token']
+  return 406 unless params['token']
   token = client[:tokens].find(:token => params['token']).first
   return 406 unless token
 
-  ads = client[:ads].find(:active => true)
+  group = client[:groups].find(:_id => (token['group'] || nil)).first
+
   ads_array = []
-  ads.each do |doc|
-    if doc['active']
-      ads_array << doc
+
+  if !group
+    ads = client[:ads].find(:active => true)
+    ads.each do |a|
+      ads_array << a['_id']
+    end
+  else
+    group['ads'].each do |a|
+      ads_array << a
     end
   end
   ads_array.shuffle!
-  ad = ad_array.first
+  ad = ads_array.first
+  ad = client[:ads].find(:_id => ad).first
 
   add_impression(ad, client)
   update_payout(token, client)
@@ -119,4 +141,24 @@ post '/ads/new' do
   return 406 unless admin?
   return 404 unless params['name'] && params['budget'] && params['content']
   create_ad(client, params['name'], params['budget'], params['content'], 123124124124)
+end
+
+post '/groups/new' do
+  return 406 unless logged_in?
+  return 406 unless admin?
+  return 406 unless params['name']
+
+  create_group client, params['name']
+end
+
+post '/groups/:group/insert' do
+  return 406 unless logged_in?
+  return 406 unless admin?
+  return 404 unless params['group'] && params['ad']
+  ad = client[:ads].find(:_id => params['ad']).first
+  return 404 unless ad
+  group = client[:groups].find(:_id => params['group']).first
+  return 404 unless group
+
+  insert_ad_to_group client, group, ad
 end

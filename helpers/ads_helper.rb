@@ -15,7 +15,7 @@ def create_ad(client, name, budget, content, end_date)
   ad['_id'] = (0...8).map { (65 + rand(26)).chr }.join
 
   client[:ads].insert_one ad
-  'ad inserted'
+  return 200
 end
 
 def update_ad(client, _id, content)
