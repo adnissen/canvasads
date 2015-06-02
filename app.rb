@@ -49,18 +49,20 @@ get '/ads' do
   return unless params['token']
   token = client[:tokens].find(:token => params['token']).first
   return 406 unless token
+
   ads = client[:ads].find(:active => true)
-  ad = ads.first
-  ad_array = []
+  ads_array = []
   ads.each do |doc|
     if doc['active']
-      ad_array << doc
+      ads_array << doc
     end
   end
-  ad_array.shuffle!
+  ads_array.shuffle!
   ad = ad_array.first
+
   add_impression(ad, client)
   update_payout(token, client)
+
   ad['content']
 end
 
