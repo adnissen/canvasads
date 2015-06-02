@@ -6,7 +6,7 @@ def create_group(client, name)
   group['_id'] = (0...16).map { (65 + rand(26)).chr }.join
 
   client[:groups].insert_one group
-  return 200
+  return group['_id']
 end
 
 def insert_ad_to_group(client, group, ad)
