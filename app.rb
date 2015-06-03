@@ -15,7 +15,7 @@ set :protection, :except => :frame_options
 client = Mongo::Client.new(ENV['MONGOLAB_URI'] || [ '127.0.0.1:27017' ], :database => ENV['RACK_ENV'] || 'heroku_app37387124')
 
 get '/' do
-  "Canvas, advertising done right."
+  send_file "index.html"
 end
 
 get '/advertisers/new' do
