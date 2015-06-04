@@ -3,7 +3,6 @@ ENV['RACK_ENV'] = 'test'
 require_relative '../app'
 require 'rspec'
 require 'rack/test'
-require 'database_cleaner'
 
 describe 'App Routes' do
   include Rack::Test::Methods
@@ -16,7 +15,6 @@ describe 'App Routes' do
     get '/advertisers/new', {:username => 'andrew', :password => 'testing', :email => 'andrew_nissen@yahoo.com'}
     expect(last_response).to be_ok
     Database.client[:advertisers].find.count.should == 1
-
   end
 
   it 'should log a user in' do
