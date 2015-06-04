@@ -1,7 +1,7 @@
-def log_in(email, password)
+def log_in_with_password(email, password)
   return true if session[:logged_in]
-  @user = Database.client[:advertisers].find(:email => email).first
-  if @user && BCrypt::Password.new(@user['password']) == password
+  @user = Advertiser.find_by_email(email)
+  if @user && BCrypt::Password.new(@user.password) == password
     session[:logged_in] = true
     session[:user] = @user
     return true
@@ -20,5 +20,5 @@ def logged_in?
 end
 
 def admin?
-  session[:user]['email'] == 'andrew_nissen@yahoo.com'
+  session[:user].email == 'andrew_nissen@yahoo.com'
 end

@@ -1,22 +1,24 @@
 def add_impression(ad)
-  Ad.find_by_id(ad['_id']).add_impression
+  Ad.find_by_id(ad.id).add_impression
 end
 
 def create_ad(name, budget, content, end_date)
-  Ad.insert_ad Ad.new(name, budget, content, session[:user]['email'])
+  ad = Ad.new(name, budget, content, session[:user].email)
+  ad.save!
   return 200
 end
 
-def update_ad(_id, content)
-  ad = Ad.find_by_id(_id)
-  return 'error, invalid credentials' unless session[:user]['email'] == ad.owner
-  ad.update_content content
+def update_ad(id, content)
+  ad = Ad.find_by_id(id)
+  return 'error, invalid credentials' unless session[:user].email == ad.owner
+  ad.content = content
+  ad.save!
   'ad updated'
 end
 
-def delete_ad(_id)
-  ad = Ad.find_by_id(_id)
-  return 'error, invalid credentials' unless session[:user]['email'] == ad.owner
-  Ad.delete_by_id(_id)
+def delete_ad(id)
+  ad = Ad.find_by_id(id)
+  return 'error, invalid credentials' unless session[:user].email == ad.owner
+  Ad.delete_byid(id)
   'ad deleted'
 end

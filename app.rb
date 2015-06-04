@@ -10,6 +10,8 @@ require_relative 'helpers/group_helper'
 require_relative 'models/ad'
 require_relative 'models/JSONable'
 require_relative 'models/token'
+require_relative 'models/advertiser'
+require_relative 'models/group'
 require_relative 'util'
 
 enable :sessions
@@ -26,7 +28,7 @@ get '/advertisers/new' do
 end
 
 get '/login' do
-  return 406 unless log_in(params['email'], params['password'])
+  return 406 unless log_in_with_password(params['email'], params['password'])
   return 200
 end
 
@@ -38,14 +40,17 @@ end
 post '/tokens/new' do
   return 406 unless logged_in?
   return 406 unless admin?
-  create_token
+
+  token = Token.new(session[:user].email)
+  token.save!
+  return 200
 end
 
 get '/tokens/:token' do
   return 406 unless logged_in?
   return 405 unless params['token']
   token = Database.client[:tokens].find(:token => params['token']).first
-  return 406 unless token && token['owner'] == session[:user]['email']
+  return 406 unless token && token.owner == session[:user].email
 
   token.to_s
 end
@@ -53,9 +58,9 @@ end
 post '/tokens/:token/group/update' do
   return 406 unless logged_in?
   return 405 unless params['token'] && params['group']
-  token = Database.client[:tokens].find(:token => params['token']).first
-  return 406 unless token && token['owner'] == session[:user]['email']
-  group = Database.client[:groups].find(:_id => params['group']).first
+  token = Token.find_by_token params['token']
+  return 406 unless token && token.owner == session[:user].email
+  group = Group.find_by_id params['group']
   return 404 unless group
 
   update_token_group token, group
@@ -63,20 +68,20 @@ end
 
 get '/ads' do
   return 406 unless params['token']
-  token = Database.client[:tokens].find(:token => params['token']).first
+  token = Token.find_by_token params['token']
   return 406 unless token
 
-  group = Database.client[:groups].find(:_id => (token['group'] || nil)).first
+  group = Group.find_by_id token.group
 
   ads_array = []
 
   if !group
     ads = Database.client[:ads].find(:active => true)
     ads.each do |a|
-      ads_array << a['_id']
+      ads_array << a['id']
     end
   else
-    group['ads'].each do |a|
+    group.ads.each do |a|
       ads_array << a
     end
   end
@@ -90,41 +95,41 @@ get '/ads' do
   ad.content
 end
 
-get '/ads/ad/:_id' do
-  ad = Database.client[:ads].find(:_id => params['_id']).first
+get '/ads/ad/:id' do
+  ad = Database.client[:ads].find(:id => params['id']).first
   return 'ad not found' unless ad
   add_impression(ad)
   ad['content']
 end
 
-get '/ads/ad/:_id/update' do
+get '/ads/ad/:id/update' do
   return 406 unless logged_in?
   return 406 unless admin?
   send_file 'views/ads/update.html'
 end
 
-post '/ads/ad/:_id/update' do
+post '/ads/ad/:id/update' do
   return 406 unless logged_in?
   return 406 unless admin?
   return 406 unless params['content']
-  update_ad(params['_id'], params['content'])
+  update_ad(params['id'], params['content'])
 end
 
-get '/ads/ad/:_id/delete' do
+get '/ads/ad/:id/delete' do
   return 406 unless logged_in?
   return 406 unless admin?
   send_file 'views/ads/delete.html'
 end
 
-post '/ads/ad/:_id/delete' do
+post '/ads/ad/:id/delete' do
   return 406 unless logged_in?
   return 406 unless admin?
-  delete_ad(params['_id'])
+  delete_ad(params['id'])
 end
 
 get '/ads/list' do
   return 406 unless logged_in?
-  ads = Database.client[:ads].find(:owner => session[:user]['email'])
+  ads = Database.client[:ads].find(:owner => session[:user].email)
   ret = ''
   ads.each do |doc|
     ret = ret + doc.to_s + '<br>' #display the docs in a nice format :3
@@ -142,7 +147,10 @@ post '/ads/new' do
   return 406 unless logged_in?
   return 406 unless admin?
   return 404 unless params['name'] && params['budget'] && params['content']
-  create_ad(params['name'], params['budget'], params['content'], 123124124124)
+
+  ad = Ad.new(params['name'], params['budget'], params['content'])
+  ad.save!
+  return 200
 end
 
 post '/groups/new' do
@@ -150,16 +158,17 @@ post '/groups/new' do
   return 406 unless admin?
   return 406 unless params['name']
 
-  create_group params['name']
+  Group.new(params['name'], session[:user].email).save!
+  return 200
 end
 
 post '/groups/:group/insert' do
   return 406 unless logged_in?
   return 406 unless admin?
   return 404 unless params['group'] && params['ad']
-  ad = Database.client[:ads].find(:_id => params['ad']).first
+  ad = Ad.find_by_id params['ad']
   return 404 unless ad
-  group = Database.client[:groups].find(:_id => params['group']).first
+  group = Group.find_by_id params['group']
   return 404 unless group
 
   insert_ad_to_group group, ad
