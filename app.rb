@@ -82,12 +82,12 @@ get '/ads' do
   end
   ads_array.shuffle!
   ad = ads_array.first
-  ad = Database.client[:ads].find(:_id => ad).first
+  ad = Ad.find_by_id ad
 
-  add_impression(ad)
+  ad.add_impression
   update_payout(token)
 
-  ad['content']
+  ad.content
 end
 
 get '/ads/ad/:_id' do

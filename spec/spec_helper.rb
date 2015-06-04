@@ -21,7 +21,6 @@ RSpec.configure do |config|
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.
   config.after(:all) do
-    Database.client = Mongo::Database.client.new([ '127.0.0.1:27017' ], :database => ENV['RACK_ENV'])
     Database.client.database.drop
   end
 
