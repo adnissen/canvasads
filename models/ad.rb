@@ -2,7 +2,7 @@ require_relative 'JSONable'
 require_relative '../util'
 
 class Ad < JSONable
-  def initialize(name, budget, content, owner)
+  def initialize(name='', budget=0, content='', owner='')
     @name = name
     @budget = budget
     @content = content
@@ -40,7 +40,7 @@ class Ad < JSONable
 
   def self.find_by_id(id)
     ad = Database.client[:ads].find(:_id => id).first
-    new_ad = Ad.new ad['name'], ad['budget'], ad['content'], ad['owner']
+    new_ad = Ad.new
     new_ad.from_json! ad.to_json
     new_ad
   end
