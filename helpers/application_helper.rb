@@ -1,6 +1,6 @@
-def log_in(client, email, password)
+def log_in(email, password)
   return true if session[:logged_in]
-  @user = client[:advertisers].find(:email => email).first
+  @user = Database.client[:advertisers].find(:email => email).first
   if @user && BCrypt::Password.new(@user['password']) == password
     session[:logged_in] = true
     session[:user] = @user

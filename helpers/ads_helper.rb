@@ -2,10 +2,8 @@ def add_impression(ad)
   Ad.find_by_id(ad['_id']).add_impression
 end
 
-def create_ad(client, name, budget, content, end_date)
-  ad = Ad.new(name, budget, content, session[:user]['email']);
-
-  client[:ads].insert_one ad.to_hash
+def create_ad(name, budget, content, end_date)
+  Ad.insert_ad Ad.new(name, budget, content, session[:user]['email'])
   return 200
 end
 

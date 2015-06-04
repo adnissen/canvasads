@@ -1,4 +1,5 @@
 require_relative 'JSONable'
+require_relative '../util'
 
 class Ad < JSONable
   def initialize(name, budget, content, owner)
@@ -13,7 +14,7 @@ class Ad < JSONable
   end
 
   def update_content(content)
-    @client[:ads].find(:_id => @_id).update_one("$set" => { :content => content })
+    Database.client[:ads].find(:_id => @_id).update_one("$set" => { :content => content })
   end
 
   def owner
@@ -21,18 +22,20 @@ class Ad < JSONable
   end
 
   def add_impression
-    @client[:ads].find(:_id => @id).update_one("$inc" => { :inventory => -1 })
-    @client[:ads].find(:_id => @id).update_one("$inc" => { :impressions => 1 })
+    Database.client[:ads].find(:_id => @id).update_one("$inc" => { :inventory => -1 })
+    Database.client[:ads].find(:_id => @id).update_one("$inc" => { :impressions => 1 })
   end
 
-  public
+  def self.insert_ad(ad)
+    Database.client[:ads].insert_one ad.to_hash
+  end
 
-  def find_by_id(id)
-    ad = @client[:ads].find(:_id => _id)
+  def self.find_by_id(id)
+    ad = Database.client[:ads].find(:_id => _id)
     Ad.new ad['name'], ad['budget'], ad['content'], ad['owner']
   end
 
-  def delete_by_id(id)
-    @client[:ads].find(:_id => id).delete_one
+  def self.delete_by_id(id)
+    Database.client[:ads].find(:_id => id).delete_one
   end
 end
