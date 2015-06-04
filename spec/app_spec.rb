@@ -77,7 +77,7 @@ describe 'App Routes' do
 
   it 'should return an ad' do
     token = client[:tokens].find.first
-    get '/ads', {:token => token['token']}
+    get '/ads', {:token => token.token}
     expect(last_response.status).to eq 200
   end
 
