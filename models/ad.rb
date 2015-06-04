@@ -31,7 +31,7 @@ class Ad < JSONable
   end
 
   def self.find_by_id(id)
-    ad = Database.client[:ads].find(:_id => id)
+    ad = Database.client[:ads].find(:_id => id).first
     Ad.new ad['name'], ad['budget'], ad['content'], ad['owner']
   end
 
