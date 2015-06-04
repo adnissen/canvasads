@@ -1,19 +1,22 @@
 require 'sinatra'
 require 'mongo'
 require 'pry'
+require 'json'
 require_relative 'helpers/ads_helper'
 require_relative 'helpers/advertiser_helper'
 require_relative 'helpers/application_helper'
 require_relative 'helpers/token_helper'
 require_relative 'helpers/group_helper'
-
+require_relative 'models/ad'
+require_relative 'models/JSONable'
+require_relative 'models/token'
 
 enable :sessions
 set :session_secret, 'adsfkljadsufljsadlft'
 set :protection, :except => :frame_options
 
 client = Mongo::Client.new(ENV['MONGOLAB_URI'] || [ '127.0.0.1:27017' ], :database => ENV['RACK_ENV'] || 'heroku_app37387124')
-
+@client = client
 get '/' do
   send_file "index.html"
 end

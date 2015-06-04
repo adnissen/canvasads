@@ -1,14 +1,6 @@
 def create_token(client, group=nil)
-  token = {}
-  token['total_earned'] = 0
-  token['last_payout'] = 0
-  token['next_payout'] = 0
-  token['impressions'] = 0
-  token['token'] = (0...16).map { (65 + rand(26)).chr }.join
-  token['owner'] = session[:user]['email']
-  token['group'] = group
-
-  client[:tokens].insert_one token
+  token = Token.new session[:user]['email']
+  client[:tokens].insert_one token.to_hash
   return 200
 end
 

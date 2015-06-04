@@ -4,23 +4,15 @@ def add_impression(ad, client)
 end
 
 def create_ad(client, name, budget, content, end_date)
-  ad = {}
-  ad['name'] = name
-  ad['budget'] = budget
-  ad['impressions'] = 0
-  ad['inventory'] = (budget.to_i / 1.50) * 1000
-  ad['content'] = content
-  ad['active'] = true
-  ad['owner'] = session[:user]['email']
-  ad['_id'] = (0...8).map { (65 + rand(26)).chr }.join
+  ad = Ad.new(name, budget, content, session[:user]['email']);
 
-  client[:ads].insert_one ad
+  client[:ads].insert_one ad.to_hash
   return 200
 end
 
 def update_ad(client, _id, content)
   return 'error, invalid credentials' unless session[:user]['email'] == client[:ads].find(:_id => _id).first['owner']
-  client[:ads].find(:_id => _id).update_one("$set" => { :content => content })
+  Ad.find_by_id(_id).update_content content
   'ad updated'
 end
 
