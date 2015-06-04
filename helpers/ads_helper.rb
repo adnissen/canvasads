@@ -10,19 +10,16 @@ def create_ad(client, name, budget, content, end_date)
   return 200
 end
 
-def update_ad(client, _id, content)
-  return 'error, invalid credentials' unless session[:user]['email'] == client[:ads].find(:_id => _id).first['owner']
-  Ad.find_by_id(_id).update_content content
+def update_ad(_id, content)
+  ad = Ad.find_by_id(_id)
+  return 'error, invalid credentials' unless session[:user]['email'] == ad.owner
+  ad.update_content content
   'ad updated'
 end
 
-def delete_ad(client, _id)
-  return 'error, invalid credentials' unless session[:user]['email'] == client[:ads].find(:_id => _id).first['owner']
-  client[:ads].find(:_id => _id).delete_one
+def delete_ad(_id)
+  ad = Ad.find_by_id(_id)
+  return 'error, invalid credentials' unless session[:user]['email'] == ad.owner
+  Ad.delete_by_id(_id)
   'ad deleted'
-end
-
-def track_engage(ad, client)
-  client[:ads].find(:_id => ad['_id']).update_one("$inc" => { :engagements => 1 })
-  client[:tokens].find(:token => params['token']).update_one("$inc" => { :engagements => 1 }) if params['token']
 end

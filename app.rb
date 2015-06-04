@@ -108,7 +108,7 @@ post '/ads/ad/:_id/update' do
   return 406 unless logged_in?
   return 406 unless admin?
   return 406 unless params['content']
-  update_ad(client, params['_id'], params['content'])
+  update_ad(params['_id'], params['content'])
 end
 
 get '/ads/ad/:_id/delete' do
@@ -120,7 +120,7 @@ end
 post '/ads/ad/:_id/delete' do
   return 406 unless logged_in?
   return 406 unless admin?
-  delete_ad(client, params['_id'])
+  delete_ad(params['_id'])
 end
 
 get '/ads/list' do

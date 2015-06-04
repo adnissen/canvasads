@@ -16,10 +16,18 @@ class Ad < JSONable
     @client[:ads].find(:_id => @_id).update_one("$set" => { :content => content })
   end
 
+  def owner
+    @owner
+  end
+
   public
 
   def find_by_id(id)
     ad = @client[:ads].find(:_id => _id)
     Ad.new ad['name'], ad['budget'], ad['content'], ad['owner']
+  end
+
+  def delete_by_id(id)
+    @client[:ads].find(:_id => id).delete_one
   end
 end
