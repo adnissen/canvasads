@@ -9,10 +9,10 @@ class JSONable
 
   def from_json! string
     JSON.load(string).each do |var, val|
-      self.instance_variable_set var, val
+      self.instance_variable_set "@#{var}", val
     end
   end
-    
+
   def to_hash
     hash = {}
     instance_variables.each {|var| hash[var.to_s.delete("@")] = instance_variable_get(var) }
