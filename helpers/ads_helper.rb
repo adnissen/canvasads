@@ -1,6 +1,5 @@
-def add_impression(ad, client)
-  client[:ads].find(:_id => ad['_id']).update_one("$inc" => { :inventory => -1 })
-  client[:ads].find(:_id => ad['_id']).update_one("$inc" => { :impressions => 1 })
+def add_impression(ad)
+  Ad.find_by_id(ad['_id']).add_impression
 end
 
 def create_ad(client, name, budget, content, end_date)

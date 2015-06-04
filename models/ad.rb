@@ -20,6 +20,11 @@ class Ad < JSONable
     @owner
   end
 
+  def add_impression
+    @client[:ads].find(:_id => @id).update_one("$inc" => { :inventory => -1 })
+    @client[:ads].find(:_id => @id).update_one("$inc" => { :impressions => 1 })
+  end
+
   public
 
   def find_by_id(id)
