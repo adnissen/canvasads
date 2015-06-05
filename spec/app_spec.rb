@@ -100,4 +100,27 @@ describe 'App Routes' do
     expect(last_response.status).to eq 200
   end
 
+  it 'should generate a bypass url' do
+    token = FactoryGirl.create(:token)
+    user = FactoryGirl.create(:advertiser)
+    get '/login', {:email => 'andrew_nissen@yahoo.com', :password => 'secret'}
+
+    post '/urls/bypass/new', {:url => '/tokens/' + token.token}
+    expect(last_response.status).to eq 200
+  end
+
+  it 'should redirect the user to the new url' do
+    url = FactoryGirl.create(:url)
+    token = FactoryGirl.create(:token)
+    url.url = "/tokens/#{token.token}"
+    url.save!
+
+    get "/urls/bypass/#{url.id}"
+    expect(last_response.status).to eq 302
+    expect(last_response.header['Location']).to eq "http://example.org#{url.url}?redirect=#{url.id}"
+
+    get "#{url.url}", {:redirect => url.id}
+    expect(last_response.status).to eq 200
+  end
+
 end

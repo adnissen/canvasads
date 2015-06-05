@@ -22,4 +22,7 @@ FactoryGirl.define do
     name 'test group'
   end
 
+  factory :url do
+  end
+
 end
