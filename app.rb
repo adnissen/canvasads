@@ -177,6 +177,13 @@ post '/groups/:group/insert' do
   insert_ad_to_group group, ad
 end
 
+get '/urls/bypass/new' do
+  return 406 unless logged_in?
+  return 406 unless admin?
+
+  send_file 'views/urls/new.html'
+end
+
 post '/urls/bypass/new' do
   return 406 unless logged_in?
   return 406 unless admin?
