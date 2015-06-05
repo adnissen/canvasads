@@ -49,7 +49,7 @@ end
 get '/tokens/:token' do
   return 406 unless logged_in?
   return 405 unless params['token']
-  token = Database.client[:tokens].find(:token => params['token']).first
+  token = Token.find_by_token params['token']
   return 406 unless token && token.owner == session[:user].email
 
   token.to_s

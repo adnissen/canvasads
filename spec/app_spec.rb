@@ -69,7 +69,7 @@ describe 'App Routes' do
     get '/login', {:email => 'andrew_nissen@yahoo.com', :password => 'secret'}
     group = FactoryGirl.create(:group)
     token = FactoryGirl.create(:token)
-    post '/tokens/' + token.token + '/group/update', {:group => group.id}
+    post '/tokens/'   + token.token + '/group/update', {:group => group.id}
     expect(last_response.status).to eq 200
     expect(Token.find_by_token(token.token).group).to eq group.id
   end
@@ -87,6 +87,16 @@ describe 'App Routes' do
     group = FactoryGirl.create(:group)
 
     get '/ads', {:token => token.token}
+    expect(last_response.status).to eq 200
+  end
+
+  it 'should return the token information' do
+    token = FactoryGirl.create(:token)
+    ad = FactoryGirl.create(:ad)
+    user = FactoryGirl.create(:advertiser)
+    get '/login', {:email => 'andrew_nissen@yahoo.com', :password => 'secret'}
+
+    get '/tokens/' + token.token
     expect(last_response.status).to eq 200
   end
 
