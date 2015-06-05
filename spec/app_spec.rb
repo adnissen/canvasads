@@ -98,6 +98,7 @@ describe 'App Routes' do
 
     get '/tokens/' + token.token
     expect(last_response.status).to eq 200
+    expect(last_response.body).not_to eq "nil"
   end
 
 end
