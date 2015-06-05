@@ -12,6 +12,7 @@ require_relative 'models/JSONable'
 require_relative 'models/token'
 require_relative 'models/advertiser'
 require_relative 'models/group'
+require_relative 'models/url'
 require_relative 'util'
 
 enable :sessions
@@ -47,10 +48,14 @@ post '/tokens/new' do
 end
 
 get '/tokens/:token' do
-  return 406 unless logged_in?
-  return 405 unless params['token']
-  token = Token.find_by_token params['token']
-  return 406 unless token && token.owner == session[:user].email
+  if params['redirect'] && !valid_bypass_url?(params['redirect'])
+    return 406 unless logged_in?
+    return 405 unless params['token']
+    token = Token.find_by_token params['token']
+    return 406 unless token && token.owner == session[:user].email
+  else
+    token = Token.find_by_token params['token']
+  end
 
   token.to_json.to_s
 end
@@ -172,4 +177,27 @@ post '/groups/:group/insert' do
   return 404 unless group
 
   insert_ad_to_group group, ad
+end
+
+get '/urls/bypass/new' do
+  return 406 unless logged_in?
+  return 406 unless admin?
+
+  send_file 'views/urls/new.html'
+end
+
+post '/urls/bypass/new' do
+  return 406 unless logged_in?
+  return 406 unless admin?
+  return 404 unless params['url']
+
+  url = Url.new params['url']
+  url.save!
+  url.id
+end
+
+get '/urls/redirect/:url' do
+  url = Url.find_by_id params['url']
+  return 404 unless url
+  redirect to(url.url + '?redirect=' + url.id)
 end

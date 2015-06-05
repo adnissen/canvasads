@@ -22,3 +22,8 @@ end
 def admin?
   session[:user].email == 'andrew_nissen@yahoo.com'
 end
+
+def valid_bypass_url?(id)
+  url = Url.find_by_id id
+  url ? true : false
+end
