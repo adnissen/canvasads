@@ -53,6 +53,8 @@ get '/tokens/:token' do
     return 405 unless params['token']
     token = Token.find_by_token params['token']
     return 406 unless token && token.owner == session[:user].email
+  else
+    token = Token.find_by_token params['token']
   end
 
   token.to_json.to_s
