@@ -13,6 +13,12 @@ describe 'Token Model' do
     token = FactoryGirl.create(:token)
     expect(token.impressions).to eq 0
     token.impressions += 1
-    expect(token.impressions).to eq 1
+    token.save!
+    expect(Token.find_by_token(token.token).impressions).to eq 1
+  end
+
+  it 'should find the right token' do
+    token = FactoryGirl.create(:token)
+    expect(Token.find_by_token(token.token).token).to eq token.token
   end
 end
