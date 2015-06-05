@@ -53,6 +53,8 @@ get '/tokens/:token' do
     return 405 unless params['token']
     token = Token.find_by_token params['token']
     return 406 unless token && token.owner == session[:user].email
+  else
+    token = Token.find_by_token params['token']
   end
 
   token.to_json.to_s
@@ -194,7 +196,7 @@ post '/urls/bypass/new' do
   url.id
 end
 
-get '/urls/bypass/:url' do
+get '/urls/redirect/:url' do
   url = Url.find_by_id params['url']
   return 404 unless url
   redirect to(url.url + '?redirect=' + url.id)

@@ -115,7 +115,7 @@ describe 'App Routes' do
     url.url = "/tokens/#{token.token}"
     url.save!
 
-    get "/urls/bypass/#{url.id}"
+    get "/urls/redirect/#{url.id}"
     expect(last_response.status).to eq 302
     expect(last_response.header['Location']).to eq "http://example.org#{url.url}?redirect=#{url.id}"
 
