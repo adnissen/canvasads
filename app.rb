@@ -52,7 +52,7 @@ get '/tokens/:token' do
   token = Token.find_by_token params['token']
   return 406 unless token && token.owner == session[:user].email
 
-  token.to_s
+  token.to_json.to_s
 end
 
 post '/tokens/:token/group/update' do
