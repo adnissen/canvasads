@@ -88,6 +88,7 @@ describe 'App Routes' do
 
     get '/ads', {:token => token.token}
     expect(last_response.status).to eq 200
+    expect(last_response.body).not_to eq 'nil'
   end
 
   it 'should return the token information' do
