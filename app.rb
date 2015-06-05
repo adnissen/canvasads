@@ -196,7 +196,7 @@ post '/urls/bypass/new' do
   url.id
 end
 
-get '/urls/bypass/:url' do
+get '/urls/redirect/:url' do
   url = Url.find_by_id params['url']
   return 404 unless url
   redirect to(url.url + '?redirect=' + url.id)
