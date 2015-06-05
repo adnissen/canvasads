@@ -201,3 +201,10 @@ get '/urls/redirect/:url' do
   return 404 unless url
   redirect to(url.url + '?redirect=' + url.id)
 end
+
+get '/dashboard' do
+  return 406 unless logged_in?
+  return 406 unless admin?
+
+  "total impressions: #{Ad.total_impressions}"
+end

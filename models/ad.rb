@@ -66,4 +66,13 @@ class Ad < JSONable
   def self.delete_by_id(id)
     Database.client[:ads].find(:id => id).delete_one
   end
+
+  def self.total_impressions
+    ads = Database.client[:ads].find
+    total = 0
+    ads.each do |ad|
+      total += ad['impressions']
+    end
+    total
+  end
 end
