@@ -125,4 +125,15 @@ describe 'App Routes' do
     expect(last_response.status).to eq 200
   end
 
+  it 'should load the dashboard' do
+    user = FactoryGirl.create(:advertiser)
+    get '/login', {:email => 'andrew_nissen@yahoo.com', :password => 'secret'}
+    ad = FactoryGirl.create(:ad)
+    token = FactoryGirl.create(:token)
+    ad.add_impression
+
+    get '/dashboard'
+    expect(last_response.status).to eq 200
+  end
+
 end
