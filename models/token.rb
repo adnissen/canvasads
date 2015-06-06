@@ -34,7 +34,7 @@ class Token < JSONable
     tokens = Database.client[:tokens].find
     total = 0
     tokens.each do |token|
-      total += token.unfilled
+      total += token['unfilled']
     end
     total
   end
