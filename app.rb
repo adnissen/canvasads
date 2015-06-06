@@ -110,6 +110,17 @@ get '/ads/ad/:id' do
   ad['content']
 end
 
+get '/ads/ad/:id/dashboard' do
+  if params['redirect'] && !valid_bypass_url?(params['redirect'])
+    return 406 unless logged_in?
+    return 406 unless logged_in?
+  end
+  ad = Database.client[:ads].find(:id => params['id']).first
+  return 'ad not found' unless ad
+  return ad.to_json if params['format'] == 'json'
+  send_file 'views/ads/dashboard.html'
+end
+
 get '/ads/ad/:id/update' do
   return 406 unless logged_in?
   return 406 unless admin?
