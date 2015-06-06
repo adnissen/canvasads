@@ -86,9 +86,7 @@ get '/ads' do
       ads_array << a['id']
     end
   else
-    group.ads.each do |a|
-      ads_array << a
-    end
+    ads_array = group.ads
   end
   ads_array.shuffle!
   ad = ads_array.first
