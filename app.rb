@@ -94,10 +94,15 @@ get '/ads' do
   ad = ads_array.first
   ad = Ad.find_by_id ad
 
-  ad.add_impression
-  update_payout(token)
+  if ad
+    ad.add_impression
+    update_payout(token)
 
-  ad.content
+    ad.content
+  else
+    token.no_fill
+    404
+  end
 end
 
 get '/ads/ad/:id' do
