@@ -221,7 +221,7 @@ get '/dashboard' do
   return 406 unless logged_in?
   return 406 unless admin?
 
-  fill_rate = 100 - ((Token.total_unfilled / Ad.total_impressions) * 100)
+  fill_rate = 100 - ((Token.total_unfilled.to_f / Ad.total_impressions.to_f) * 100)
 
   "total impressions: #{Ad.total_impressions}\n
   total unfilled: #{Token.total_unfilled}\n
