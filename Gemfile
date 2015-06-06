@@ -8,3 +8,7 @@ gem 'pry'
 gem 'factory_girl'
 gem 'rspec'
 gem 'rack-test'
+
+group :development do
+  gem "better_errors"
+end

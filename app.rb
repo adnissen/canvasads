@@ -2,6 +2,7 @@ require 'sinatra'
 require 'mongo'
 require 'pry'
 require 'json'
+require "better_errors"
 require_relative 'helpers/ads_helper'
 require_relative 'helpers/advertiser_helper'
 require_relative 'helpers/application_helper'
@@ -18,6 +19,11 @@ require_relative 'util'
 enable :sessions
 set :session_secret, 'adsfkljadsufljsadlft'
 set :protection, :except => :frame_options
+
+configure :development do
+  use BetterErrors::Middleware
+  BetterErrors.application_root = __dir__
+end
 
 get '/' do
   send_file "index.html"
