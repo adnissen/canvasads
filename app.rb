@@ -133,6 +133,7 @@ post '/ads/ad/:id/delete' do
   return 406 unless logged_in?
   return 406 unless admin?
   delete_ad(params['id'])
+  "deleted ad #{params['id']}"
 end
 
 post '/ads/ad/:id/active' do
@@ -151,7 +152,7 @@ get '/ads/list' do
   ads = Database.client[:ads].find(:owner => session[:user].email)
   ret = ''
   ads.each do |doc|
-    ret = ret + doc.to_s + "<br><form action='/ads/ad/#{doc['id']}/active' method='POST'><button type='submit'>Toggle Active</button></form>" #display the docs in a nice format :3
+    ret = ret + doc.to_s + "<br><form action='/ads/ad/#{doc['id']}/active' method='POST'><button type='submit'>Toggle Active</button></form><form action='/ads/ad/#{doc['id']}/delete' method='POST'><button type='submit'>Delete</button></form>" #display the docs in a nice format :3
   end
   ret
 end
