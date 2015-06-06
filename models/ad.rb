@@ -71,7 +71,7 @@ class Ad < JSONable
     ads = Database.client[:ads].find
     total = 0
     ads.each do |ad|
-      total += ad['impressions']
+      total += (ad['impressions'] || 0)
     end
     total
   end
