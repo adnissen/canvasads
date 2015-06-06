@@ -156,7 +156,7 @@ post '/ads/new' do
   return 406 unless admin?
   return 404 unless params['name'] && params['budget'] && params['content']
 
-  ad = Ad.new(params['name'], params['budget'], params['content'])
+  ad = Ad.new(params['name'], params['budget'], params['content'], session[:user].email)
   ad.save!
   return 200
 end
