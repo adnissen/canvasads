@@ -11,7 +11,7 @@ class Ad < JSONable
 
     @id = (0...8).map { (65 + rand(26)).chr }.join
     @active = false
-    @inventory = (budget.to_i / 1.10) * 1000
+    @inventory = (budget.to_f / 1.10) * 1000
     @impressions =  0
   end
 

@@ -8,6 +8,13 @@ def create_ad(name, budget, content, end_date)
   return 200
 end
 
+def update_ad_budget(id, budget)
+  ad = Ad.find_by_id id
+  ad.budget += budget
+  ad.inventory += (budget.to_f / 1.10) * 1000
+  ad.save!
+end
+
 def update_ad(id, content)
   ad = Ad.find_by_id(id)
   return 'error, invalid credentials' unless session[:user].email == ad.owner
