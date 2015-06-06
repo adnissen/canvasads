@@ -32,7 +32,7 @@ describe 'Token Model' do
     token = FactoryGirl.create(:token)
 
     get '/ads', {:token => token.token}
-    expect(last_response.status).to eq 404
+    expect(last_response.status).to eq 200
 
     token = Token.find_by_token token.token
     expect(token.unfilled).to eq 1

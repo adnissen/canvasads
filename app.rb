@@ -99,7 +99,7 @@ get '/ads' do
     ad.content
   else
     token.no_fill
-    404
+    send_file 'views/ads/nofill.html'
   end
 end
 
