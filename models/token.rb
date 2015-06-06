@@ -30,6 +30,15 @@ class Token < JSONable
     self.save!
   end
 
+  def self.total_unfilled
+    tokens = Database.client[:tokens].find
+    total = 0
+    tokens.each do |token|
+      total += token.unfilled
+    end
+    total
+  end
+
   def self.find_by_token(id)
     token = Database.client[:tokens].find(:token => id).first
     if token
