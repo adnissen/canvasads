@@ -143,7 +143,7 @@ post '/ads/ad/:id/active' do
 
   ad.active = !ad.active
   ad.save!
-  "ad #{ad.id} is now active"
+  "ad #{ad.id} active is now set to #{ad.active}"
 end
 
 get '/ads/list' do
@@ -151,7 +151,7 @@ get '/ads/list' do
   ads = Database.client[:ads].find(:owner => session[:user].email)
   ret = ''
   ads.each do |doc|
-    ret = ret + doc.to_s + "<br><form action='/ads/#{doc['id']}/active' method='POST'><button type='submit'>Submit</button></form>" #display the docs in a nice format :3
+    ret = ret + doc.to_s + "<br><form action='/ads/ad/#{doc['id']}/active' method='POST'><button type='submit'>Toggle Active</button></form>" #display the docs in a nice format :3
   end
   ret
 end
