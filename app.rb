@@ -212,6 +212,6 @@ get '/dashboard' do
   return 406 unless admin?
 
   "total impressions: #{Ad.total_impressions}\n
-  total unfilled: #{Total.total_unfilled}\n
-  fill rate: #{100 - ((Total.total_unfilled / Ad.total_impressions) * 100)}"
+  total unfilled: #{Token.total_unfilled}\n
+  fill rate: #{100 - ((Token.total_unfilled / Ad.total_impressions) * 100)}"
 end
