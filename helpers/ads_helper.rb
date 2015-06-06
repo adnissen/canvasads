@@ -19,6 +19,6 @@ end
 def delete_ad(id)
   ad = Ad.find_by_id(id)
   return 'error, invalid credentials' unless session[:user].email == ad.owner
-  Ad.delete_byid(id)
+  Ad.delete_by_id(id)
   'ad deleted'
 end
