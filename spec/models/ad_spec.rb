@@ -47,4 +47,20 @@ describe 'Ad Model' do
     ad.save!
     expect((Ad.find_by_id ad.id).name).to eq ad.name
   end
+
+  it 'should run out of impressions and mark itself as seen' do
+    ad = FactoryGirl.build(:ad)
+    ad.budget = 1.10
+    ad.active = true
+    ad.save!
+    expect((Ad.find_by_id ad.id).inventory).to eq 1000
+    expect((Ad.find_by_id ad.id).active).to eq true
+
+    for i in 0...1000
+      ad.add_impression
+    end
+
+    expect((Ad.find_by_id ad.id).inventory).to eq 0
+    expect((Ad.find_by_id ad.id).active).to eq false
+  end
 end

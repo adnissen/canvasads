@@ -2,7 +2,7 @@ require_relative 'JSONable'
 require_relative '../util'
 
 class Ad < JSONable
-  attr_accessor :name, :budget, :content, :owner, :active
+  attr_accessor :id, :name, :budget, :content, :owner, :active, :impressions, :inventory
   def initialize(name='', budget=0, content='', owner='')
     @name = name
     @budget = budget
@@ -11,7 +11,8 @@ class Ad < JSONable
 
     @id = (0...8).map { (65 + rand(26)).chr }.join
     @active = false
-    @inventory = (budget.to_i / 1.50) * 1000
+    @inventory = (budget.to_i / 1.10) * 1000
+    @impressions =  0
   end
 
   def update_content(content)
@@ -31,21 +32,13 @@ class Ad < JSONable
     end
   end
 
-  def owner
-    @owner
-  end
-
-  def content
-    @content
-  end
-
-  def id
-    @id
-  end
-
   def add_impression
-    Database.client[:ads].find(:id => @id).update_one("$inc" => { :inventory => -1 })
-    Database.client[:ads].find(:id => @id).update_one("$inc" => { :impressions => 1 })
+    @impressions += 1
+    @inventory -= 1
+    if @inventory <= 0
+      @active = false
+    end
+    self.save!
   end
 
   def self.insert_ad(ad)
