@@ -5,6 +5,7 @@
 
 require 'builder'
 require 'nokogiri'
+require 'keen'
 
 #
 # Creates a log file under 'helpers/logs/'
@@ -28,24 +29,28 @@ end
 # @params: ad_id - id of add being returned
 # @return: N/A
 #
-def log_Impression(request, ad_id)
+def log_Impression(request, impres)
   File.open("helpers/logs/master_log.xml", "a") { |file|
     xml_file = Builder::XmlMarkup.new(:target => file, :indent => 2)
     xml_file.impression { |imp|  # creates XML entry
-      imp.time(Time.now.strftime("%d/%m/%Y %H:%M"));
-      imp.token(request['token']);
-	  imp.host(request.host);
-	  imp.ip(request.ip);
-	  imp.adID(ad_id)
+      imp.time(impres[:time]);
+      imp.token(impres[:token]);
+	    imp.group(impres[:group]) || nil;
+	    imp.host(request.host);
+	    imp.ip(impres[:ip]);
+	    imp.adID([:ad_id]);
     }
+    Keen.publish(:ad_views, impression) if ENV["KEEN_PROJECT_ID"]
 
-	# <impression>
-	# => <time>   	</time>
-	# => <token>   	</token>
-	# => <host>		</host>
-	# => <ip>		</ip>
-	# => <adID>		</adID>
-	#</impression>
+		# <impression>
+		# => <time>   </time>
+		# => <token>  </token>
+		# => <group>	</group>
+		# => <host>		</host>
+		# => <ip>			</ip>
+		# => <adID>		</adID>
+		#</impression>
+
   }
 end
 
