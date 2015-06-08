@@ -103,7 +103,7 @@ get '/ads' do
     ad.add_impression
     update_payout(token)
 
-    #this needs to be converted into a class!!
+    # this needs to be converted into a class!!
     impression = {}
     impression[:ad] = ad.id
     impression[:token] = token.token
@@ -115,7 +115,7 @@ get '/ads' do
     impression[:time] = Date.today
     impression[:ip] = request.ip
 
-    Keen.publish(:ad_views, impression) if ENV['KEEN_PROJECT_ID']
+    Keen.publish(:ad_views, impression) if ENV["KEEN_PROJECT_ID"]
     ad.content
   else
     token.no_fill
