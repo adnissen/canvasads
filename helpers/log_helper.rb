@@ -14,11 +14,11 @@ require 'Nokogiri'
 # @return: N/A
 #
 def log_create(filename, log_type)
-	path = "helpers/logs/" + filename
-	file = File.new(path, "w+")
-	xml_file = Builder::XmlMarkup.new(:target => file, :indent => 1)
-	xml_file.instruct! :xml, :encoding => "ASCII" # adds xml encoding info
-	xml_file.log(Time.now.strftime("%d/%m/%Y %H:%M"), "type" => log_type) # creates first entry with date log opened and log_type
+  path = "helpers/logs/" + filename
+  file = File.new(path, "w+")
+  xml_file = Builder::XmlMarkup.new(:target => file, :indent => 1)
+  xml_file.instruct! :xml, :encoding => "ASCII" # adds xml encoding info
+  xml_file.log(Time.now.strftime("%d/%m/%Y %H:%M"), "type" => log_type) # creates first entry with date log opened and log_type
 end
 
 #
@@ -29,24 +29,24 @@ end
 # @return: N/A
 #
 def log_Impression(request, ad_id)
-	File.open("helpers/logs/master_log.xml", "a") { |file|
-		xml_file = Builder::XmlMarkup.new(:target => file, :indent => 2)
-		xml_file.impression { |imp|  # creates XML entry
-			imp.time(Time.now.strftime("%d/%m/%Y %H:%M")); 
-			imp.token(request['token']); 
-			imp.host(request.host); 
-			imp.ip(request.ip); 
-			imp.adID(ad_id) 
-		}
+  File.open("helpers/logs/master_log.xml", "a") { |file|
+    xml_file = Builder::XmlMarkup.new(:target => file, :indent => 2)
+    xml_file.impression { |imp|  # creates XML entry
+      imp.time(Time.now.strftime("%d/%m/%Y %H:%M")); 
+      imp.token(request['token']); 
+	  imp.host(request.host); 
+	  imp.ip(request.ip); 
+	  imp.adID(ad_id) 
+    }
 
-			# <impression>
-			# => <time>   	</time>
-			# => <token>   	</token>
-			# => <host>		</host>
-			# => <ip>		</ip>
-			# => <adID>		</adID>
-			#</impression>
-	}
+	# <impression>
+	# => <time>   	</time>
+	# => <token>   	</token>
+	# => <host>		</host>
+	# => <ip>		</ip>
+	# => <adID>		</adID>
+	#</impression>
+  }
 end
 
 #
@@ -55,7 +55,7 @@ end
 # @params: request - sinatra request served to route handler
 # @return: N/A
 #
-def log_NoServe(request)
+def log_no_serve(request)
 	File.open("helpers/logs/master_log.xml", "a") { |file|
 	xml_file = Builder::XmlMarkup.new(:target => file, :indent => 2)
 		xml_file.noServe { |ns|  # creates XML entry
@@ -80,7 +80,7 @@ end
 # @params: logfile - xml file that contains impression log
 # @return: counter - number of impressions in file
 # 
-def count_Impressions(logfile)
+def count_impressions(logfile)
 	file = File.open("helpers/logs/" + logfile)
 	doc = Nokogiri::XML(file)
 	counter = 0
@@ -96,7 +96,7 @@ end
 # @params: logfile - xml file that contains noServe log
 # @return: counter - number of noServes in file
 #
-def count_noServe(logfile)
+def count_no_serve(logfile)
 	file = File.open("helpers/logs/" + logfile)
 	doc = Nokogiri::XML(file)
 	counter = 0
@@ -113,7 +113,7 @@ end
 # @params: hostname - host name of site that requested ad
 # @return: counter - number of impressions in file
 # 
-def count_Impressions_byHost(logfile, hostname)
+def count_impressions_by_host(logfile, hostname)
 	file = File.open("helpers/logs/" + logfile)
 	doc = Nokogiri::XML(file)
 	counter = 0
@@ -132,7 +132,7 @@ end
 # @params: hostname - host name of site that requested ad
 # @return: counter - number of noServes in file
 #
-def count_noServe_byHost(logfile, hostname)
+def count_no_serve_by_host(logfile, hostname)
 	file = File.open("helpers/logs/" + logfile)
 	doc = Nokogiri::XML(file)
 	counter = 0
@@ -151,7 +151,7 @@ end
 # @params: ad_ID - ID of requested ad
 # @return: counter - number of impressions in file
 # 
-def count_Impressions_byAdID(logfile, ad_ID)
+def count_impressions_by_ad_id(logfile, ad_ID)
 	file = File.open("helpers/logs/" + logfile)
 	doc = Nokogiri::XML(file)
 	counter = 0
