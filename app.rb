@@ -2,7 +2,7 @@ require 'sinatra'
 require 'mongo'
 require 'pry'
 require 'json'
-require "better_errors"
+require "keen"
 require_relative 'helpers/ads_helper'
 require_relative 'helpers/advertiser_helper'
 require_relative 'helpers/application_helper'
@@ -21,6 +21,7 @@ set :session_secret, 'adsfkljadsufljsadlft'
 set :protection, :except => :frame_options
 
 configure :development do
+  require "better_errors"
   use BetterErrors::Middleware
   BetterErrors.application_root = __dir__
 end
@@ -102,6 +103,19 @@ get '/ads' do
     ad.add_impression
     update_payout(token)
 
+    # this needs to be converted into a class!!
+    impression = {}
+    impression[:ad] = ad.id
+    impression[:token] = token.token
+    if group
+      impression[:group] = group.id
+    else
+      impression[:group] = nil
+    end
+    impression[:time] = Date.today
+    impression[:ip] = request.ip
+
+    Keen.publish(:ad_views, impression) if ENV["KEEN_PROJECT_ID"]
     ad.content
   else
     token.no_fill
@@ -123,6 +137,9 @@ get '/ads/ad/:id/dashboard' do
   end
   ad = Database.client[:ads].find(:id => params['id']).first
   return 'ad not found' unless ad
+
+  groups = Database.client[:groups].find(:ads => {"$in" => {}})
+
   return ad.to_json if params['format'] == 'json'
   send_file 'views/ads/dashboard.html'
 end
