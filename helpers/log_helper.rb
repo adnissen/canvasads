@@ -98,10 +98,15 @@ end
 #
 # Counts the number of impressions in keen
 #
+# @params: time_filter - use nil for no filter. Otherwise use a keen supported time filter string
 # @return: counter - number of impressions in file
 #
-def count_keen_impressions()
-	return Keen.count('ad_views')
+def count_keen_impressions(time_filter)
+	if time_filter == nil
+		return Keen.count('ad_views')
+	else
+		return Keen.count('ad_views', :timeframe => time_filter)
+	end
 end
 
 #
@@ -181,10 +186,11 @@ end
 # Counts the number of impressions in keen by ad ID
 #
 # @params: ad_ID - ID of ad
+# @params: time_filter - use nil for no filter. Otherwise use a keen supported time filter string
 # @return: counter - number of impressions with that ad ID
 #
-def count_keen_impression_by_ad_id(ad_ID)
-	return Keen.count('ad_views', :filters => [{
+def count_keen_impression_by_ad_id(ad_ID, time_filter)
+	return Keen.count('ad_views', :timeframe => time_filter, :filters => [{
 		:ad_id => impression[:ad_ID]
 	}])
 end
@@ -193,10 +199,11 @@ end
 # Counts the number of impressions in keen by ad ID
 #
 # @params: token - token sent in request
+# @params: time_filter - use nil for no filter. Otherwise use a keen supported time filter string
 # @return: counter - number of impressions with that token
 #
-def count_keen_impression_by_token(token)
-	return Keen.count('ad_views', :filters => [{
+def count_keen_impression_by_token(token, time_filter)
+	return Keen.count('ad_views', :timeframe => time_filter, :filters => [{
 		:token => impression[:token]
 	}])
 end
@@ -205,10 +212,11 @@ end
 # Counts the number of impressions in keen by ad ID
 #
 # @params: group - collection of ads
+# @params: time_filter - use nil for no filter. Otherwise use a keen supported time filter string
 # @return: counter - number of impressions with that ad ID
 #
-def count_keen_impression_by_group(group)
-	return Keen.count('ad_views', :filters => [{
+def count_keen_impression_by_group(group, time_filter)
+	return Keen.count('ad_views', :timeframe => time_filter, :filters => [{
 		:group => impression[:group]
 	}])
 end
@@ -217,10 +225,11 @@ end
 # Counts the number of impressions in keen by ad ID
 #
 # @params: ip - ip address in impression request
+# @params: time_filter - use nil for no filter. Otherwise use a keen supported time filter string
 # @return: counter - number of impressions with that ad ID
 #
-def count_keen_impression_by_ip(ip)
-	return Keen.count('ad_views', :filters => [{
+def count_keen_impression_by_ip(ip, time_filter)
+	return Keen.count('ad_views', :timeframe => time_filter, :filters => [{
 		:ip => impression[:ip]
 	}])
 end
