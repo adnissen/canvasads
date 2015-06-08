@@ -2,6 +2,7 @@ require 'sinatra'
 require 'mongo'
 require 'pry'
 require 'json'
+require 'keen'
 require_relative 'helpers/ads_helper'
 require_relative 'helpers/advertiser_helper'
 require_relative 'helpers/application_helper'
@@ -102,6 +103,7 @@ get '/ads' do
     ad.add_impression
     update_payout(token)
 
+    Keen.publish(:ad_views, {:ad => ad.id, :token => token.token, :ip => request.ip, :time => Date.now}) if ENV['KEEN_PROJECT_ID']
     ad.content
   else
     token.no_fill
