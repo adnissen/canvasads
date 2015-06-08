@@ -4,7 +4,7 @@
 # @author: gtgettel
 
 require 'builder'
-require 'Nokogiri'
+require 'nokogiri'
 
 #
 # Creates a log file under 'helpers/logs/'
@@ -32,11 +32,11 @@ def log_Impression(request, ad_id)
   File.open("helpers/logs/master_log.xml", "a") { |file|
     xml_file = Builder::XmlMarkup.new(:target => file, :indent => 2)
     xml_file.impression { |imp|  # creates XML entry
-      imp.time(Time.now.strftime("%d/%m/%Y %H:%M")); 
-      imp.token(request['token']); 
-	  imp.host(request.host); 
-	  imp.ip(request.ip); 
-	  imp.adID(ad_id) 
+      imp.time(Time.now.strftime("%d/%m/%Y %H:%M"));
+      imp.token(request['token']);
+	  imp.host(request.host);
+	  imp.ip(request.ip);
+	  imp.adID(ad_id)
     }
 
 	# <impression>
@@ -51,7 +51,7 @@ end
 
 #
 # Creates a log of a request that went unserved in the master_log.xml
-# 
+#
 # @params: request - sinatra request served to route handler
 # @return: N/A
 #
@@ -60,9 +60,9 @@ def log_no_serve(request)
 	xml_file = Builder::XmlMarkup.new(:target => file, :indent => 2)
 		xml_file.noServe { |ns|  # creates XML entry
 			ns.time(Time.now.strftime("%d/%m/%Y %H:%M"));
-			ns.token(request['token']); 
-			ns.host(request.host); 
-			ns.ip(request.ip); 
+			ns.token(request['token']);
+			ns.host(request.host);
+			ns.ip(request.ip);
 		}
 
 			# <noServe>
@@ -79,7 +79,7 @@ end
 #
 # @params: logfile - xml file that contains impression log
 # @return: counter - number of impressions in file
-# 
+#
 def count_impressions(logfile)
 	file = File.open("helpers/logs/" + logfile)
 	doc = Nokogiri::XML(file)
@@ -112,14 +112,14 @@ end
 # @params: logfile - xml file that contains impression log
 # @params: hostname - host name of site that requested ad
 # @return: counter - number of impressions in file
-# 
+#
 def count_impressions_by_host(logfile, hostname)
 	file = File.open("helpers/logs/" + logfile)
 	doc = Nokogiri::XML(file)
 	counter = 0
 	doc.xpath('/impression').each do |imp| # gets each <impression> tag
 		if imp.at_xpath('host') == hostname
-			counter++
+		  counter++
 		end
 	end
 	return counter
@@ -150,7 +150,7 @@ end
 # @params: logfile - xml file that contains impression log
 # @params: ad_ID - ID of requested ad
 # @return: counter - number of impressions in file
-# 
+#
 def count_impressions_by_ad_id(logfile, ad_ID)
 	file = File.open("helpers/logs/" + logfile)
 	doc = Nokogiri::XML(file)
