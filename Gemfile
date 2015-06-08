@@ -9,6 +9,8 @@ gem 'factory_girl'
 gem 'rspec'
 gem 'rack-test'
 
+gem 'keen'
+
 group :development do
   gem "better_errors"
 end

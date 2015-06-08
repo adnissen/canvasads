@@ -2,6 +2,7 @@ require 'sinatra'
 require 'mongo'
 require 'pry'
 require 'json'
+require "keen"
 require_relative 'helpers/ads_helper'
 require_relative 'helpers/advertiser_helper'
 require_relative 'helpers/application_helper'
@@ -102,6 +103,19 @@ get '/ads' do
     ad.add_impression
     update_payout(token)
 
+    # this needs to be converted into a class!!
+    impression = {}
+    impression[:ad] = ad.id
+    impression[:token] = token.token
+    if group
+      impression[:group] = group.id
+    else
+      impression[:group] = nil
+    end
+    impression[:time] = Date.today
+    impression[:ip] = request.ip
+
+    Keen.publish(:ad_views, impression) if ENV["KEEN_PROJECT_ID"]
     ad.content
   else
     token.no_fill
