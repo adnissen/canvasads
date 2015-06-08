@@ -103,7 +103,7 @@ get '/ads' do
     ad.add_impression
     update_payout(token)
 
-    Keen.publish(:ad_views, {:ad => ad.id, :token => token.token, :ip => request.ip, :time => Date.now}) if ENV['KEEN_PROJECT_ID']
+    Keen.publish(:ad_views, {:ad => ad.id, :token => token.token, :group => group || nil, :ip => request.ip, :time => Date.now}) if ENV['KEEN_PROJECT_ID']
     ad.content
   else
     token.no_fill
