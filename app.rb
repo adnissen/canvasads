@@ -27,7 +27,7 @@ configure :development do
 end
 
 get '/' do
-  send_file "index.html"
+  send_file "public/index.html"
 end
 
 get '/advertisers/new' do
