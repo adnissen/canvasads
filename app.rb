@@ -51,7 +51,7 @@ get '/tokens/new' do
 
   token = Token.new(session[:user].email)
   token.save!
-  token.id
+  token.token
 end
 
 post '/tokens/new' do
