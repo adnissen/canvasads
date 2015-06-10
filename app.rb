@@ -45,6 +45,15 @@ get '/logout' do
   'logged out'
 end
 
+get '/tokens/new' do
+  return 406 unless logged_in?
+  return 406 unless admin?
+
+  token = Token.new(session[:user].email)
+  token.save!
+  token.id
+end
+
 post '/tokens/new' do
   return 406 unless logged_in?
   return 406 unless admin?
