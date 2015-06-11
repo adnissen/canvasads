@@ -19,6 +19,7 @@ require_relative 'util'
 enable :sessions
 set :session_secret, 'adsfkljadsufljsadlft'
 set :protection, :except => :frame_options
+Mongo::Logger.logger.level = Logger::WARN
 
 configure :development do
   require "better_errors"
@@ -61,7 +62,7 @@ post '/engage' do
 
   ad.engagements += 1
   ad.save!
-  
+
   return 200
 end
 
