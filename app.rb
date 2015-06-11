@@ -54,6 +54,17 @@ get '/tokens/new' do
   token.token
 end
 
+post '/engage' do
+  return 406 unless !session[:last_seen_ad].nil?
+  ad = Ad.find_by_id session[:last_seen_ad]
+  return 404 unless ad
+
+  ad.engagements += 1
+  ad.save!
+  
+  return 200
+end
+
 post '/tokens/new' do
   return 406 unless logged_in?
   return 406 unless admin?
@@ -125,6 +136,8 @@ get '/ads' do
     impression[:ip] = request.ip
 
     Keen.publish(:ad_views, impression) if ENV["KEEN_PROJECT_ID"]
+
+    session[:last_seen_ad] = ad.id
     ad.content
   else
     token.no_fill
