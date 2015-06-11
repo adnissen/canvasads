@@ -1,0 +1,13 @@
+<iframe id="canvas" width="320" height="50" frameBorder="0" src="http://www.canvasads.io/ads?token=HXIYZSIUTJGHGAKX"></iframe>
+<script>
+
+function receiveMessage(message)
+{
+  if (message.data == 'nofill'){
+    canvas = document.getElementById('canvas');
+    //do something with the iframe, substitute it with another ad
+  }
+}
+
+window.addEventListener("message", receiveMessage, false);
+</script>

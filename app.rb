@@ -19,6 +19,7 @@ require_relative 'util'
 enable :sessions
 set :session_secret, 'adsfkljadsufljsadlft'
 set :protection, :except => :frame_options
+Mongo::Logger.logger.level = Logger::WARN
 
 configure :development do
   require "better_errors"
@@ -27,7 +28,7 @@ configure :development do
 end
 
 get '/' do
-  send_file "index.html"
+  send_file "public/index.html"
 end
 
 get '/advertisers/new' do
@@ -43,6 +44,26 @@ end
 get '/logout' do
   log_out
   'logged out'
+end
+
+get '/tokens/new' do
+  return 406 unless logged_in?
+  return 406 unless admin?
+
+  token = Token.new(session[:user].email)
+  token.save!
+  token.token
+end
+
+post '/engage' do
+  return 406 unless !session[:last_seen_ad].nil?
+  ad = Ad.find_by_id session[:last_seen_ad]
+  return 404 unless ad
+
+  ad.engagements += 1
+  ad.save!
+
+  return 200
 end
 
 post '/tokens/new' do
@@ -116,6 +137,8 @@ get '/ads' do
     impression[:ip] = request.ip
 
     Keen.publish(:ad_views, impression) if ENV["KEEN_PROJECT_ID"]
+
+    session[:last_seen_ad] = ad.id
     ad.content
   else
     token.no_fill

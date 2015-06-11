@@ -26,7 +26,8 @@
 
   <script>
     document.getElementById('ad').addEventListener("click", function(e){
-      window.top.location.href = 'https://briefmetrics.com/';
+      window.top.$.post('/engage');
+      window.top.location.href = 'https://briefmetrics.com/?utm_source=canvas&utm_medium=banner&utm_campaign=tabs';
     })
   </script>
 </body>

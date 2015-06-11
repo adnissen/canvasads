@@ -1,7 +1,60 @@
 <head>
 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<style>
+  .container{
+    width: 50%;
+    margin-left: 25%;
+    color: white;
+  }
+
+  .smallbox {
+    margin: 1px;
+    height: 30%;
+    width: 43.74%;
+    display: inline-block;
+    padding: 20px;
+  }
+
+  .one{
+    background-color: #47bbb3;
+  }
+
+  .two{
+    background-color:#9c4274;
+  }
+
+  .bigbox{
+    margin: 1px;
+    margin-top: 2px;
+    height:40%;
+    width: 98.9%;
+    float: middle;
+    display: inline-block;
+  }
+
+  .bone{
+    background-color: #ec663c;
+  }
+
+  .title{
+    text-align: center;
+    width: 100%;
+  }
+
+  #text-one{
+    position: absolute;
+    left: 45%;
+    top: 10%;
+  }
+
+</style>
 </head>
 <body>
+  <div class="container">
+    <span class="smallbox one"><h1 class="text-one">HELLLLLLO!</h1></span>
+<span class="smallbox two"><span></span></span>
+    <div class="bigbox bone"></div>
+  </div>
 <script>
 $.get(window.location.pathname + '?format=json', function(data){
   $('body').append(data);
