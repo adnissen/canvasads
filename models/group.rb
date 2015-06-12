@@ -37,4 +37,13 @@ class Group < JSONable
       nil
     end
   end
+
+  def active_ads
+    ret = []
+    @ads.each do |ad|
+      ad = Ad.find_by_id(ad)
+      ret << ad if ad.active
+    end
+  end
+
 end
