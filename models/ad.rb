@@ -1,8 +1,10 @@
+require 'date'
 require_relative 'JSONable'
 require_relative '../util'
 
 class Ad < JSONable
-  attr_accessor :id, :name, :budget, :content, :owner, :active, :impressions, :inventory
+  attr_accessor :id, :name, :budget, :content, :owner, :active, :impressions, :inventory, :engagements, :end_time
+
   def initialize(name='', budget=0, content='', owner='')
     @name = name
     @budget = budget
@@ -13,6 +15,8 @@ class Ad < JSONable
     @active = false
     @inventory = (budget.to_f / 1.10) * 1000
     @impressions =  0
+    @engagements = 0
+    @end_time = DateTime.now >> 1
   end
 
   def update_content(content)
