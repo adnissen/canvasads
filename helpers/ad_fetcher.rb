@@ -11,10 +11,11 @@ require_relative "../util"
 
 #
 # Calculates the score of the ad
-# score = -(Log10(1-random_number[0..1])) * (ad_inventory/sum_of_inventory) / Max[ad_hours_remaining - 12, .01]
+# score = -(Log10(1-random_number[0..1])) * 
+# => (ad_inventory/sum_of_inventory) / Max[ad_hours_remaining - 12, .01]
 #
 # @params: ad - ad being scored
-# @params: inventory_sum - sum of the inventory of active ads in group or of all ads
+# @params: inventory_sum - sum of the inventory of active ads
 # @return: score - determined by algorithm
 #
 def calculate_score(ad, inventory_sum)
@@ -23,9 +24,12 @@ def calculate_score(ad, inventory_sum)
   # algorithm is based on ratio between ads needed
   percent_impressions_wanted = ad.inventory / inventory_sum
   # and time remaining for campaign
-  ad_time_remaining = TimeDifference.between((DateTime.parse(ad.end_time).to_time), DateTime.now.to_time).in_hours
+  ad_time_remaining = TimeDifference.between(
+    (DateTime.parse(ad.end_time).to_time), 
+    DateTime.now.to_time).in_hours
   ad_hours_remaining = [(ad_time_remaining - 12), 0.01].max
-  (-1) * rand_num_with_log * percent_impressions_wanted / ad_hours_remaining # combine pieces to get score
+  # combine pieces to get score
+  (-1) * rand_num_with_log * percent_impressions_wanted / ad_hours_remaining
 end
 
 #
