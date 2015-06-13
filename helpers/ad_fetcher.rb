@@ -3,12 +3,11 @@
 #
 # @author: gtgettel
 
-require 'date'
-require 'mongo'
-require 'time_difference'
-require_relative '../models/ad'
-require_relative '../util'
-
+require "date"
+require "mongo"
+require "time_difference"
+require_relative "../models/ad"
+require_relative "../util"
 
 #
 # Calculates the score of the ad
@@ -19,11 +18,14 @@ require_relative '../util'
 # @return: score - determined by algorithm
 #
 def calculate_score(ad, inventory_sum)
-  rand_num_with_log = Math.log10(1 - Random.rand()) # generate random float between 0 and 1
-  percent_impressions_wanted = ad.inventory / inventory_sum # algorithm is based on ratio between ads needed
-  ad_time_remaining = TimeDifference.between((DateTime.parse(ad.end_time).to_time), DateTime.now.to_time).in_hours          # and time remaining for campaign
-  ad_hours_remaining = (ad_time_remaining - 12) * 0.01
-  return (-1) * rand_num_with_log * percent_impressions_wanted / ad_hours_remaining # combine pieces to get score
+  # generate random float between 0 and 1
+  rand_num_with_log = Math.log10(1 - Random.rand)
+  # algorithm is based on ratio between ads needed
+  percent_impressions_wanted = ad.inventory / inventory_sum
+  # and time remaining for campaign
+  ad_time_remaining = TimeDifference.between((DateTime.parse(ad.end_time).to_time), DateTime.now.to_time).in_hours
+  ad_hours_remaining = [(ad_time_remaining - 12), 0.01].max
+  (-1) * rand_num_with_log * percent_impressions_wanted / ad_hours_remaining # combine pieces to get score
 end
 
 #
@@ -42,7 +44,7 @@ def compare_ad_scores(ads_array)
   highest_score_ad = nil
   highest_score = 0
   # for each active ad
-  ads_array.each do | ad_ar |
+  ads_array.each do |ad_ar|
     ad_ar_score = calculate_score(ad_ar, inventory_sum) # find score
     if ad_ar == nil
       highest_score_ad = ad_ar
@@ -53,7 +55,7 @@ def compare_ad_scores(ads_array)
     end
   end
 
-  return highest_score_ad
+  highest_score_ad
 end
 
 #
@@ -81,20 +83,19 @@ def ad_fetcher_by_group(group)
   end
 end
 
-
 #
 # Selects the ad to be returned after a request
 #
 # @params: N/A
 # @return: ad impression or nil if no ads are active
 #
-def ad_fetcher()
-  ads = Database.client[:ads].find(:active => true) # get all active ads
+def ad_fetcher
+  ads = Database.client[:ads].find(active: true) # get all active ads
   ads_array = []
   # convert JSON ads to object instances of Ad
   ads.each do |ad|
-    if ad['active']
-      new_ad = Ad.find_by_id ad['id']
+    if ad["active"]
+      new_ad = Ad.find_by_id ad["id"]
       ads_array << new_ad
     end
   end
