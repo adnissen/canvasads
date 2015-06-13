@@ -2,7 +2,7 @@ require 'sinatra'
 require 'mongo'
 require 'pry'
 require 'json'
-require "better_errors"
+require "keen"
 require_relative 'helpers/ads_helper'
 require_relative 'helpers/advertiser_helper'
 require_relative 'helpers/application_helper'
@@ -20,14 +20,16 @@ require_relative 'util'
 enable :sessions
 set :session_secret, 'adsfkljadsufljsadlft'
 set :protection, :except => :frame_options
+Mongo::Logger.logger.level = Logger::WARN
 
 configure :development do
+  require "better_errors"
   use BetterErrors::Middleware
   BetterErrors.application_root = __dir__
 end
 
 get '/' do
-  send_file "index.html"
+  send_file "public/index.html"
 end
 
 get '/advertisers/new' do
@@ -43,6 +45,26 @@ end
 get '/logout' do
   log_out
   'logged out'
+end
+
+get '/tokens/new' do
+  return 406 unless logged_in?
+  return 406 unless admin?
+
+  token = Token.new(session[:user].email)
+  token.save!
+  token.token
+end
+
+post '/engage' do
+  return 406 unless !session[:last_seen_ad].nil?
+  ad = Ad.find_by_id session[:last_seen_ad]
+  return 404 unless ad
+
+  ad.engagements += 1
+  ad.save!
+
+  return 200
 end
 
 post '/tokens/new' do
@@ -97,6 +119,21 @@ get '/ads' do
     ad.add_impression
     update_payout(token)
 
+    # this needs to be converted into a class!!
+    impression = {}
+    impression[:ad] = ad.id
+    impression[:token] = token.token
+    if group
+      impression[:group] = group.id
+    else
+      impression[:group] = nil
+    end
+    impression[:time] = Date.today
+    impression[:ip] = request.ip
+
+    Keen.publish(:ad_views, impression) if ENV["KEEN_PROJECT_ID"]
+
+    session[:last_seen_ad] = ad.id
     ad.content
   else
     token.no_fill
@@ -118,6 +155,9 @@ get '/ads/ad/:id/dashboard' do
   end
   ad = Database.client[:ads].find(:id => params['id']).first
   return 'ad not found' unless ad
+
+  groups = Database.client[:groups].find(:ads => {"$in" => {}})
+
   return ad.to_json if params['format'] == 'json'
   send_file 'views/ads/dashboard.html'
 end
