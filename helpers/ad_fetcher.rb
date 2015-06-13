@@ -19,11 +19,11 @@ require_relative '../util'
 # @return: score - determined by algorithm
 #
 def calculate_score(ad, inventory_sum)
-	rand_num_with_log = Math.log10(1 - Random.rand()) # generate random float between 0 and 1
-	percent_impressions_wanted = ad.inventory / inventory_sum # algorithm is based on ratio between ads needed
-	ad_time_remaining = TimeDifference.between((DateTime.parse(ad.end_time).to_time), DateTime.now.to_time).in_hours					# and time remaining for campaign
-	ad_hours_remaining = (ad_time_remaining - 12) * 0.01
-	return (-1) * rand_num_with_log * percent_impressions_wanted / ad_hours_remaining # combine pieces to get score
+  rand_num_with_log = Math.log10(1 - Random.rand()) # generate random float between 0 and 1
+  percent_impressions_wanted = ad.inventory / inventory_sum # algorithm is based on ratio between ads needed
+  ad_time_remaining = TimeDifference.between((DateTime.parse(ad.end_time).to_time), DateTime.now.to_time).in_hours          # and time remaining for campaign
+  ad_hours_remaining = (ad_time_remaining - 12) * 0.01
+  return (-1) * rand_num_with_log * percent_impressions_wanted / ad_hours_remaining # combine pieces to get score
 end
 
 #
@@ -33,27 +33,27 @@ end
 # @return: highest_score_ad - ad object with highest score
 #
 def compare_ad_scores(ads_array)
-	inventory_sum = 0
-	# calculate sum of ad inventory
-	ads_array.each do |ad|
-		inventory_sum += ad.inventory
-	end
+  inventory_sum = 0
+  # calculate sum of ad inventory
+  ads_array.each do |ad|
+    inventory_sum += ad.inventory
+  end
 
-	highest_score_ad = nil
-	highest_score = 0
-	# for each active ad
-	ads_array.each do | ad_ar |
-		ad_ar_score = calculate_score(ad_ar, inventory_sum) # find score
-		if ad_ar == nil
-			highest_score_ad = ad_ar
-			highest_score = ad_ar_score
-		elsif ad_ar_score >= highest_score # if greatest score so far
-			highest_score_ad = ad_ar
-			highest_score = ad_ar_score
-		end
-	end
+  highest_score_ad = nil
+  highest_score = 0
+  # for each active ad
+  ads_array.each do | ad_ar |
+    ad_ar_score = calculate_score(ad_ar, inventory_sum) # find score
+    if ad_ar == nil
+      highest_score_ad = ad_ar
+      highest_score = ad_ar_score
+    elsif ad_ar_score >= highest_score # if greatest score so far
+      highest_score_ad = ad_ar
+      highest_score = ad_ar_score
+    end
+  end
 
-	return highest_score_ad
+  return highest_score_ad
 end
 
 #
@@ -63,22 +63,22 @@ end
 # @return: ad impression or nil if no ads are active in the group
 #
 def ad_fetcher_by_group(group)
-	ads_array = []
+  ads_array = []
 
-	# find all active ads in a group
-	group.ads.each do |ad|
-		ad = Ad.find_by_id ad
-		if ad.active
-			ads_array << ad
-		end
-	end
+  # find all active ads in a group
+  group.ads.each do |ad|
+    ad = Ad.find_by_id ad
+    if ad.active
+      ads_array << ad
+    end
+  end
 
-	# compare scores if there are ads or return nil if none
-	if ads_array.any?
-		return compare_ad_scores(ads_array)
-	else
-		return nil
-	end
+  # compare scores if there are ads or return nil if none
+  if ads_array.any?
+    return compare_ad_scores(ads_array)
+  else
+    return nil
+  end
 end
 
 
@@ -89,20 +89,20 @@ end
 # @return: ad impression or nil if no ads are active
 #
 def ad_fetcher()
-	ads = Database.client[:ads].find(:active => true) # get all active ads
-	ads_array = []
-	# convert JSON ads to object instances of Ad
-	ads.each do |ad|
-		if ad['active']
-			new_ad = Ad.find_by_id ad['id']
-			ads_array << new_ad
-		end
-	end
+  ads = Database.client[:ads].find(:active => true) # get all active ads
+  ads_array = []
+  # convert JSON ads to object instances of Ad
+  ads.each do |ad|
+    if ad['active']
+      new_ad = Ad.find_by_id ad['id']
+      ads_array << new_ad
+    end
+  end
 
-	# compare scores if there are ads or return nil if none
-	if ads_array.any?
-		return compare_ad_scores(ads_array)
-	else
-		return nil
-	end
+  # compare scores if there are ads or return nil if none
+  if ads_array.any?
+    return compare_ad_scores(ads_array)
+  else
+    return nil
+  end
 end
