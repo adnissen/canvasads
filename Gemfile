@@ -8,8 +8,8 @@ gem 'pry'
 gem 'factory_girl'
 gem 'rspec'
 gem 'rack-test'
-
 gem 'keen'
+gem 'newrelic_rpm'
 
 group :development do
   gem "better_errors"

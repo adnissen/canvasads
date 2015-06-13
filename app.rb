@@ -3,6 +3,7 @@ require 'mongo'
 require 'pry'
 require 'json'
 require "keen"
+require 'newrelic_rpm' if ENV['NEW_RELIC_APP_NAME']
 require_relative 'helpers/ads_helper'
 require_relative 'helpers/advertiser_helper'
 require_relative 'helpers/application_helper'
