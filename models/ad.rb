@@ -16,7 +16,7 @@ class Ad < JSONable
     @inventory = (budget.to_f / 1.10) * 1000
     @impressions =  0
     @engagements = 0
-    @end_time = DateTime.now >> 1
+    @end_time = (DateTime.now >> 1).to_s
   end
 
   def update_content(content)

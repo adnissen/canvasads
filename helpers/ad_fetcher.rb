@@ -5,6 +5,8 @@
 
 require 'date'
 require 'mongo'
+require 'time_difference'
+require_relative '../models/ad'
 require_relative '../util'
 
 
@@ -19,8 +21,8 @@ require_relative '../util'
 def calculate_score(ad, inventory_sum)
 	rand_num_with_log = Math.log10(1 - Random.rand()) # generate random float between 0 and 1
 	percent_impressions_wanted = ad.inventory / inventory_sum # algorithm is based on ratio between ads needed
-	ad_time_remaining = ad.end_time - DateTime.now						# and time remaining for campaign
-	ad_hours_remaining = [(ad_time_remaining.to_time / 3600).round - 12, .01]
+	ad_time_remaining = TimeDifference.between((DateTime.parse(ad.end_time).to_time), DateTime.now.to_time).in_hours					# and time remaining for campaign
+	ad_hours_remaining = (ad_time_remaining - 12) * 0.01
 	return (-1) * rand_num_with_log * percent_impressions_wanted / ad_hours_remaining # combine pieces to get score
 end
 
@@ -70,7 +72,7 @@ def ad_fetcher_by_group(group)
 			ads_array << ad
 		end
 	end
-	
+
 	# compare scores if there are ads or return nil if none
 	if ads_array.any?
 		return compare_ad_scores(ads_array)
@@ -91,8 +93,10 @@ def ad_fetcher()
 	ads_array = []
 	# convert JSON ads to object instances of Ad
 	ads.each do |ad|
-		ad = Ad.find_by_id(ad)
-		ads_array << ad if ad.active
+		if ad['active']
+			new_ad = Ad.find_by_id ad['id']
+			ads_array << new_ad
+		end
 	end
 
 	# compare scores if there are ads or return nil if none
