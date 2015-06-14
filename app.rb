@@ -3,19 +3,20 @@ require "mongo"
 require "pry"
 require "json"
 require "keen"
-require_relative "helpers/ads_helper"
-require_relative "helpers/advertiser_helper"
-require_relative "helpers/application_helper"
-require_relative "helpers/token_helper"
-require_relative "helpers/group_helper"
-require_relative "helpers/ad_fetcher"
-require_relative "models/ad"
-require_relative "models/JSONable"
-require_relative "models/token"
-require_relative "models/advertiser"
-require_relative "models/group"
-require_relative "models/url"
-require_relative "util"
+require 'newrelic_rpm' if ENV['NEW_RELIC_APP_NAME']
+require_relative 'helpers/ads_helper'
+require_relative 'helpers/advertiser_helper'
+require_relative 'helpers/application_helper'
+require_relative 'helpers/token_helper'
+require_relative 'helpers/group_helper'
+require_relative 'helpers/ad_fetcher'
+require_relative 'models/ad'
+require_relative 'models/JSONable'
+require_relative 'models/token'
+require_relative 'models/advertiser'
+require_relative 'models/group'
+require_relative 'models/url'
+require_relative 'util'
 
 enable :sessions
 set :session_secret, 'adsfkljadsufljsadlft'

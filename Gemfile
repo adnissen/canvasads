@@ -9,8 +9,8 @@ gem 'factory_girl'
 gem 'rspec'
 gem 'rack-test'
 gem 'time_difference'
-
 gem 'keen'
+gem 'newrelic_rpm'
 
 group :development do
   gem "better_errors"
