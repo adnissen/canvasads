@@ -1,7 +1,7 @@
-require 'sinatra'
-require 'mongo'
-require 'pry'
-require 'json'
+require "sinatra"
+require "mongo"
+require "pry"
+require "json"
 require "keen"
 require 'newrelic_rpm' if ENV['NEW_RELIC_APP_NAME']
 require_relative 'helpers/ads_helper'
@@ -9,6 +9,7 @@ require_relative 'helpers/advertiser_helper'
 require_relative 'helpers/application_helper'
 require_relative 'helpers/token_helper'
 require_relative 'helpers/group_helper'
+require_relative 'helpers/ad_fetcher'
 require_relative 'models/ad'
 require_relative 'models/JSONable'
 require_relative 'models/token'
@@ -110,16 +111,10 @@ get '/ads' do
   ads_array = []
 
   if !group
-    ads = Database.client[:ads].find(:active => true)
-    ads.each do |a|
-      ads_array << a['id']
-    end
+    ad = ad_fetcher
   else
-    ads_array = group.ads
+    ad = ad_fetcher_by_group group
   end
-  ads_array.shuffle!
-  ad = ads_array.first
-  ad = Ad.find_by_id ad
 
   if ad
     ad.add_impression
