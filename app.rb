@@ -132,7 +132,7 @@ get '/ads' do
     impression[:time] = Date.today
     impression[:ip] = request.ip
 
-    Keen.publish(:ad_views, impression) if ENV["KEEN_PROJECT_ID"]
+    Database.client[:impressions].insert_one(impression) if ENV["KEEN_PROJECT_ID"]
 
     session[:last_seen_ad] = ad.id
     ad.content
