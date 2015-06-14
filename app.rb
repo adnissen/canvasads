@@ -131,8 +131,10 @@ get '/ads' do
     end
     impression[:time] = Date.today
     impression[:ip] = request.ip
+    impression[:hostname] = request.host
+    impression[:user_agent] = request.user_agent
 
-    Database.client[:impressions].insert_one(impression) if ENV["KEEN_PROJECT_ID"]
+    Database.client[:impressions].insert_one(impression)
 
     session[:last_seen_ad] = ad.id
     ad.content
