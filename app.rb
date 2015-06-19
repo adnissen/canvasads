@@ -4,6 +4,7 @@ require "pry"
 require "json"
 require "keen"
 require 'newrelic_rpm' if ENV['NEW_RELIC_APP_NAME']
+require "time_difference"
 require_relative 'helpers/ads_helper'
 require_relative 'helpers/advertiser_helper'
 require_relative 'helpers/application_helper'
@@ -16,7 +17,11 @@ require_relative 'models/token'
 require_relative 'models/advertiser'
 require_relative 'models/group'
 require_relative 'models/url'
+require_relative 'models/impression'
+require_relative 'models/click_event'
+require_relative 'models/user'
 require_relative 'util'
+
 
 enable :sessions
 set :session_secret, 'adsfkljadsufljsadlft'
@@ -58,12 +63,18 @@ get '/tokens/new' do
 end
 
 post '/engage' do
+  # check for last seen ad in session
   return 406 unless !session[:last_seen_ad].nil?
   ad = Ad.find_by_id session[:last_seen_ad]
   return 404 unless ad
 
+  # update ad stats
   ad.engagements += 1
   ad.save!
+
+  # create a Click_Event and add to db
+  click = Click_Event.new(request.ip, request.hostname, ad.id)
+  Database.client[:click_events].insert_one click
 
   return 200
 end
@@ -102,40 +113,68 @@ post '/tokens/:token/group/update' do
 end
 
 get '/ads' do
+  # check for token
   return 406 unless params['token']
   token = Token.find_by_token params['token']
   return 406 unless token
 
+  # match token to group
   group = Group.find_by_id token.group
 
-  ads_array = []
+  # look for user in database
+  found_user = Database.client[:users].find(:ip => request.ip).first
+  if found_user # user already exists
+    user = User.new # convert to object
+    user.from_json! found_user.to_json
+    if !user.user_agent.include?(request.user_agent.to_s) # check user agent
+      # update first user with new user agent list
+      user.user_agents.push(request.user_agent.to_s)
+      Database.client[:users].update(
+        { ip: user.ip },
+        {
+          "$set" => {
+            user_agents: user.user_agents
+          },
+          multi: false
+        }
+      )
+    end
+    if (TimeDifference(
+      DateTime.parse(user.last_time_seen).to_time,
+      DateTime.now.to_time).in_minutes > 60) # has it been an hour since seen
+      # spawn thread to handle geocoder api request
+      thr = Thread.new { find_location_use_thread(request, user.ip) }
+    end
+  else # user does not exist
+    # create and handle new user
+    user = User.new(request.ip,nil,nil,nil,nil,[request.user_agent.to_s])
+    Database.client[:users].insert_one user.to_hash
+    thr = Thread.new { find_location_use_thread(request, user.ip) }
+  end
 
+  # fetch ad
   if !group
     ad = ad_fetcher
   else
     ad = ad_fetcher_by_group group
   end
 
+  # return ad or no_fill
   if ad
     ad.add_impression
     update_payout(token)
 
-    # this needs to be converted into a class!!
-    impression = {}
-    impression[:ad] = ad.id
-    impression[:token] = token.token
+    # create impression
     if group
-      impression[:group] = group.id
+      impression = Impression.new ad.id, token.token, group.id, request.ip, request.host
     else
-      impression[:group] = nil
+      impression = Impression.new ad.id, token.token, nil, request.ip, request.host
     end
-    impression[:time] = Date.today
-    impression[:ip] = request.ip
-    impression[:hostname] = request.host
-    impression[:user_agent] = request.user_agent
 
-    Database.client[:impressions].insert_one(impression)
+    # add impression to database
+    Database.client[:impressions].insert_one impression.to_hash
 
+    # update session
     session[:last_seen_ad] = ad.id
     ad.content
   else
