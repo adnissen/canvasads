@@ -11,6 +11,7 @@ gem 'rack-test'
 gem 'time_difference'
 gem 'keen'
 gem 'newrelic_rpm'
+gem 'geocoder'
 
 group :development do
   gem "better_errors"
