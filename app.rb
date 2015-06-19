@@ -3,7 +3,7 @@ require "mongo"
 require "pry"
 require "json"
 require "keen"
-require "newrelic_rpm" if ENV['NEW_RELIC_APP_NAME']
+require "newrelic_rpm" if ENV["NEW_RELIC_APP_NAME"]
 require "time_difference"
 require_relative "helpers/ads_helper"
 require_relative "helpers/advertiser_helper"
@@ -143,13 +143,13 @@ get '/ads' do
       DateTime.parse(user.last_time_seen).to_time,
       DateTime.now.to_time).in_minutes > 60 # has it been an hour since seen
       # spawn thread to handle geocoder api request
-      thr = Thread.new { find_location_use_thread(request, user.ip) }
+      Thread.new { find_location_use_thread(request, user.ip) }
     end
   else # user does not exist
     # create and handle new user
-    user = User.new(request.ip, nil ,nil ,nil ,nil ,[request.user_agent.to_s])
+    user = User.new(request.ip, nil, nil, nil, nil, [request.user_agent.to_s])
     Database.client[:users].insert_one user.to_hash
-    thr = Thread.new { find_location_use_thread(request, user.ip) }
+    Thread.new { find_location_use_thread(request, user.ip) }
   end
 
   # fetch ad
@@ -167,10 +167,10 @@ get '/ads' do
     # create impression
     if group
       impression = Impression.new ad.id, token.token, group.id,
-        request.ip, request.host
+                                  request.ip, request.host
     else
       impression = Impression.new ad.id, token.token, nil,
-        request.ip, request.host
+                                  request.ip, request.host
     end
 
     # add impression to database
