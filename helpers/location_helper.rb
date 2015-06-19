@@ -46,5 +46,5 @@ def find_location_use_thread(request, user_ip)
       }
     )
   end
-  Thread.exit # end thread
+  Thread.exit # exit thread
 end

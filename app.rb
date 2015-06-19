@@ -3,24 +3,24 @@ require "mongo"
 require "pry"
 require "json"
 require "keen"
-require 'newrelic_rpm' if ENV['NEW_RELIC_APP_NAME']
+require "newrelic_rpm" if ENV['NEW_RELIC_APP_NAME']
 require "time_difference"
-require_relative 'helpers/ads_helper'
-require_relative 'helpers/advertiser_helper'
-require_relative 'helpers/application_helper'
-require_relative 'helpers/token_helper'
-require_relative 'helpers/group_helper'
-require_relative 'helpers/ad_fetcher'
-require_relative 'models/ad'
-require_relative 'models/JSONable'
-require_relative 'models/token'
-require_relative 'models/advertiser'
-require_relative 'models/group'
-require_relative 'models/url'
-require_relative 'models/impression'
-require_relative 'models/click_event'
-require_relative 'models/user'
-require_relative 'util'
+require_relative "helpers/ads_helper"
+require_relative "helpers/advertiser_helper"
+require_relative "helpers/application_helper"
+require_relative "helpers/token_helper"
+require_relative "helpers/group_helper"
+require_relative "helpers/ad_fetcher"
+require_relative "models/ad"
+require_relative "models/JSONable"
+require_relative "models/token"
+require_relative "models/advertiser"
+require_relative "models/group"
+require_relative "models/url"
+require_relative "models/impression"
+require_relative "models/click_event"
+require_relative "models/user"
+require_relative "util"
 
 
 enable :sessions
@@ -73,7 +73,7 @@ post '/engage' do
   ad.save!
 
   # create a Click_Event and add to db
-  click = Click_Event.new(request.ip, request.hostname, ad.id)
+  click = ClickEvent.new(request.ip, request.hostname, ad.id)
   Database.client[:click_events].insert_one click
 
   return 200
@@ -122,7 +122,7 @@ get '/ads' do
   group = Group.find_by_id token.group
 
   # look for user in database
-  found_user = Database.client[:users].find(:ip => request.ip).first
+  found_user = Database.client[:users].find(ip: request.ip).first
   if found_user # user already exists
     user = User.new # convert to object
     user.from_json! found_user.to_json
@@ -139,15 +139,15 @@ get '/ads' do
         }
       )
     end
-    if (TimeDifference(
+    if TimeDifference(
       DateTime.parse(user.last_time_seen).to_time,
-      DateTime.now.to_time).in_minutes > 60) # has it been an hour since seen
+      DateTime.now.to_time).in_minutes > 60 # has it been an hour since seen
       # spawn thread to handle geocoder api request
       thr = Thread.new { find_location_use_thread(request, user.ip) }
     end
   else # user does not exist
     # create and handle new user
-    user = User.new(request.ip,nil,nil,nil,nil,[request.user_agent.to_s])
+    user = User.new(request.ip, nil ,nil ,nil ,nil ,[request.user_agent.to_s])
     Database.client[:users].insert_one user.to_hash
     thr = Thread.new { find_location_use_thread(request, user.ip) }
   end
@@ -166,9 +166,11 @@ get '/ads' do
 
     # create impression
     if group
-      impression = Impression.new ad.id, token.token, group.id, request.ip, request.host
+      impression = Impression.new ad.id, token.token, group.id,
+        request.ip, request.host
     else
-      impression = Impression.new ad.id, token.token, nil, request.ip, request.host
+      impression = Impression.new ad.id, token.token, nil,
+        request.ip, request.host
     end
 
     # add impression to database
